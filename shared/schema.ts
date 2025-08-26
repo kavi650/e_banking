@@ -83,12 +83,41 @@ export const qrPayments = pgTable("qr_payments", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Chatbot conversations
+export const chatbotConversations = pgTable("chatbot_conversations", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  query: text("query").notNull(),
+  response: text("response").notNull(),
+  queryType: varchar("query_type", { length: 50 }).notNull(), // balance, transactions, help, general
+  isResolved: boolean("is_resolved").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Fraud detection alerts
+export const fraudAlerts = pgTable("fraud_alerts", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  transactionId: integer("transaction_id").references(() => transactions.id),
+  alertType: varchar("alert_type", { length: 50 }).notNull(), // unusual_amount, frequent_transactions, time_pattern, location_anomaly
+  riskScore: decimal("risk_score", { precision: 5, scale: 2 }).notNull(), // 0.00 to 100.00
+  description: text("description").notNull(),
+  status: varchar("status", { length: 20 }).default("pending").notNull(), // pending, reviewed, false_positive, confirmed_fraud
+  reviewedBy: integer("reviewed_by").references(() => users.id), // admin who reviewed
+  reviewedAt: timestamp("reviewed_at"),
+  metadata: jsonb("metadata"), // additional fraud detection data
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   sentTransactions: many(transactions, { relationName: "sentTransactions" }),
   receivedTransactions: many(transactions, { relationName: "receivedTransactions" }),
   sessions: many(userSessions),
   qrPayments: many(qrPayments),
+  chatbotConversations: many(chatbotConversations),
+  fraudAlerts: many(fraudAlerts),
+  reviewedFraudAlerts: many(fraudAlerts, { relationName: "reviewedAlerts" }),
 }));
 
 export const transactionsRelations = relations(transactions, ({ one }) => ({
@@ -115,6 +144,29 @@ export const qrPaymentsRelations = relations(qrPayments, ({ one }) => ({
   user: one(users, {
     fields: [qrPayments.userId],
     references: [users.id],
+  }),
+}));
+
+export const chatbotConversationsRelations = relations(chatbotConversations, ({ one }) => ({
+  user: one(users, {
+    fields: [chatbotConversations.userId],
+    references: [users.id],
+  }),
+}));
+
+export const fraudAlertsRelations = relations(fraudAlerts, ({ one }) => ({
+  user: one(users, {
+    fields: [fraudAlerts.userId],
+    references: [users.id],
+  }),
+  transaction: one(transactions, {
+    fields: [fraudAlerts.transactionId],
+    references: [transactions.id],
+  }),
+  reviewer: one(users, {
+    fields: [fraudAlerts.reviewedBy],
+    references: [users.id],
+    relationName: "reviewedAlerts",
   }),
 }));
 
@@ -153,6 +205,20 @@ export const insertQrPaymentSchema = createInsertSchema(qrPayments).omit({
   createdAt: true,
 });
 
+export const chatbotQuerySchema = z.object({
+  query: z.string().min(1),
+});
+
+export const insertChatbotConversationSchema = createInsertSchema(chatbotConversations).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertFraudAlertSchema = createInsertSchema(fraudAlerts).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -164,3 +230,8 @@ export type TransactionRequest = z.infer<typeof transactionSchema>;
 export type UserSession = typeof userSessions.$inferSelect;
 export type QrPayment = typeof qrPayments.$inferSelect;
 export type InsertQrPayment = z.infer<typeof insertQrPaymentSchema>;
+export type ChatbotConversation = typeof chatbotConversations.$inferSelect;
+export type InsertChatbotConversation = z.infer<typeof insertChatbotConversationSchema>;
+export type ChatbotQuery = z.infer<typeof chatbotQuerySchema>;
+export type FraudAlert = typeof fraudAlerts.$inferSelect;
+export type InsertFraudAlert = z.infer<typeof insertFraudAlertSchema>;

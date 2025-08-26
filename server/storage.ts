@@ -3,6 +3,8 @@ import {
   transactions,
   userSessions,
   qrPayments,
+  chatbotConversations,
+  fraudAlerts,
   type User,
   type InsertUser,
   type Transaction,
@@ -10,6 +12,10 @@ import {
   type UserSession,
   type QrPayment,
   type InsertQrPayment,
+  type ChatbotConversation,
+  type InsertChatbotConversation,
+  type FraudAlert,
+  type InsertFraudAlert,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, sql, gte } from "drizzle-orm";
@@ -42,6 +48,16 @@ export interface IStorage {
   getQrPaymentByCode(qrCode: string): Promise<QrPayment | undefined>;
   markQrPaymentAsUsed(id: number): Promise<void>;
   cleanupExpiredQrPayments(): Promise<void>;
+  
+  // Chatbot operations
+  createChatbotConversation(conversation: InsertChatbotConversation): Promise<ChatbotConversation>;
+  getChatbotConversationsByUserId(userId: number): Promise<ChatbotConversation[]>;
+  
+  // Fraud detection operations
+  createFraudAlert(alert: InsertFraudAlert): Promise<FraudAlert>;
+  getFraudAlerts(): Promise<FraudAlert[]>;
+  getFraudAlertsByUserId(userId: number): Promise<FraudAlert[]>;
+  updateFraudAlertStatus(id: number, status: string, reviewedBy?: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -190,6 +206,58 @@ export class DatabaseStorage implements IStorage {
     await db
       .delete(qrPayments)
       .where(sql`${qrPayments.expiresAt} < NOW()`);
+  }
+
+  // Chatbot operations
+  async createChatbotConversation(conversation: InsertChatbotConversation): Promise<ChatbotConversation> {
+    const [chatbotConversation] = await db
+      .insert(chatbotConversations)
+      .values(conversation)
+      .returning();
+    return chatbotConversation;
+  }
+
+  async getChatbotConversationsByUserId(userId: number): Promise<ChatbotConversation[]> {
+    return await db
+      .select()
+      .from(chatbotConversations)
+      .where(eq(chatbotConversations.userId, userId))
+      .orderBy(desc(chatbotConversations.createdAt));
+  }
+
+  // Fraud detection operations
+  async createFraudAlert(alert: InsertFraudAlert): Promise<FraudAlert> {
+    const [fraudAlert] = await db
+      .insert(fraudAlerts)
+      .values(alert)
+      .returning();
+    return fraudAlert;
+  }
+
+  async getFraudAlerts(): Promise<FraudAlert[]> {
+    return await db
+      .select()
+      .from(fraudAlerts)
+      .orderBy(desc(fraudAlerts.createdAt));
+  }
+
+  async getFraudAlertsByUserId(userId: number): Promise<FraudAlert[]> {
+    return await db
+      .select()
+      .from(fraudAlerts)
+      .where(eq(fraudAlerts.userId, userId))
+      .orderBy(desc(fraudAlerts.createdAt));
+  }
+
+  async updateFraudAlertStatus(id: number, status: string, reviewedBy?: number): Promise<void> {
+    await db
+      .update(fraudAlerts)
+      .set({
+        status,
+        reviewedBy,
+        reviewedAt: new Date(),
+      })
+      .where(eq(fraudAlerts.id, id));
   }
 }
 

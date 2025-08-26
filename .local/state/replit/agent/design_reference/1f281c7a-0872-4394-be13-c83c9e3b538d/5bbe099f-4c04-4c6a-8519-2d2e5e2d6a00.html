@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Banking System - Backend Architecture Design</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'bank-primary': '#0053ba',
+                        'bank-light': '#00addb',
+                        'bank-bg': '#f4f8fb',
+                    }
+                }
+            }
+        };
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-bank-primary to-bank-light text-white">
+        <div class="container mx-auto px-6 py-8">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold mb-2">
+                    <i class="fas fa-university mr-3"></i>
+                    E-Banking System Backend Architecture
+                </h1>
+                <p class="text-xl opacity-90">Complete system design for production-ready banking application</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-6 py-8 max-w-7xl">
+        
+        <!-- Architecture Overview -->
+        <section class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <h2 class="text-3xl font-bold text-bank-primary mb-6 flex items-center">
+                <i class="fas fa-sitemap mr-3"></i>
+                System Architecture Overview
+            </h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                <!-- Frontend Layer -->
+                <div class="bg-blue-50 p-6 rounded-lg border-2 border-blue-200">
+                    <h3 class="text-xl font-semibold text-blue-800 mb-4">
+                        <i class="fas fa-desktop mr-2"></i>
+                        Frontend Layer (Existing)
+                    </h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Static HTML/CSS/JS</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Responsive Design</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Mobile Optimized</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>QR Scanner Integration</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Chart.js Visualizations</li>
+                    </ul>
+                </div>
+
+                <!-- Backend Layer -->
+                <div class="bg-green-50 p-6 rounded-lg border-2 border-green-200">
+                    <h3 class="text-xl font-semibold text-green-800 mb-4">
+                        <i class="fas fa-server mr-2"></i>
+                        Backend Layer (New)
+                    </h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center"><i class="fas fa-plus text-blue-500 mr-2"></i>Express.js REST API</li>
+                        <li class="flex items-center"><i class="fas fa-plus text-blue-500 mr-2"></i>JWT Authentication</li>
+                        <li class="flex items-center"><i class="fas fa-plus text-blue-500 mr-2"></i>Password Encryption</li>
+                        <li class="flex items-center"><i class="fas fa-plus text-blue-500 mr-2"></i>Session Management</li>
+                        <li class="flex items-center"><i class="fas fa-plus text-blue-500 mr-2"></i>Transaction Processing</li>
+                    </ul>
+                </div>
+
+                <!-- Database Layer -->
+                <div class="bg-purple-50 p-6 rounded-lg border-2 border-purple-200">
+                    <h3 class="text-xl font-semibold text-purple-800 mb-4">
+                        <i class="fas fa-database mr-2"></i>
+                        Database Layer (New)
+                    </h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center"><i class="fas fa-plus text-blue-500 mr-2"></i>PostgreSQL Database</li>
+                        <li class="flex items-center"><i class="fas fa-plus text-blue-500 mr-2"></i>User Management</li>
+                        <li class="flex items-center"><i class="fas fa-plus text-blue-500 mr-2"></i>Account Records</li>
+                        <li class="flex items-center"><i class="fas fa-plus text-blue-500 mr-2"></i>Transaction History</li>
+                        <li class="flex items-center"><i class="fas fa-plus text-blue-500 mr-2"></i>Audit Logging</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Data Flow Diagram -->
+            <div class="bg-gray-50 p-6 rounded-lg">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Data Flow Architecture</h3>
+                <div class="flex items-center justify-center space-x-4 text-sm">
+                    <div class="bg-blue-500 text-white px-4 py-2 rounded">Frontend UI</div>
+                    <i class="fas fa-arrow-right text-gray-500"></i>
+                    <div class="bg-green-500 text-white px-4 py-2 rounded">Express API</div>
+                    <i class="fas fa-arrow-right text-gray-500"></i>
+                    <div class="bg-purple-500 text-white px-4 py-2 rounded">PostgreSQL DB</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Database Schema -->
+        <section class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <h2 class="text-3xl font-bold text-bank-primary mb-6 flex items-center">
+                <i class="fas fa-table mr-3"></i>
+                Database Schema Design
+            </h2>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Users Table -->
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-users mr-2"></i>
+                        users
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-200">
+                                <tr>
+                                    <th class="p-2 text-left">Field</th>
+                                    <th class="p-2 text-left">Type</th>
+                                    <th class="p-2 text-left">Constraints</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr><td class="p-2">user_id</td><td class="p-2">SERIAL</td><td class="p-2">PRIMARY KEY</td></tr>
+                                <tr><td class="p-2">account_number</td><td class="p-2">VARCHAR(20)</td><td class="p-2">UNIQUE, NOT NULL</td></tr>
+                                <tr><td class="p-2">email</td><td class="p-2">VARCHAR(255)</td><td class="p-2">UNIQUE, NOT NULL</td></tr>
+                                <tr><td class="p-2">password_hash</td><td class="p-2">VARCHAR(255)</td><td class="p-2">NOT NULL</td></tr>
+                                <tr><td class="p-2">full_name</td><td class="p-2">VARCHAR(100)</td><td class="p-2">NOT NULL</td></tr>
+                                <tr><td class="p-2">phone</td><td class="p-2">VARCHAR(15)</td><td class="p-2">NOT NULL</td></tr>
+                                <tr><td class="p-2">balance</td><td class="p-2">DECIMAL(15,2)</td><td class="p-2">DEFAULT 0.00</td></tr>
+                                <tr><td class="p-2">wallet_balance</td><td class="p-2">DECIMAL(15,2)</td><td class="p-2">DEFAULT 0.00</td></tr>
+                                <tr><td class="p-2">is_active</td><td class="p-2">BOOLEAN</td><td class="p-2">DEFAULT true</td></tr>
+                                <tr><td class="p-2">created_at</td><td class="p-2">TIMESTAMP</td><td class="p-2">DEFAULT NOW()</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Transactions Table -->
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-exchange-alt mr-2"></i>
+                        transactions
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-200">
+                                <tr>
+                                    <th class="p-2 text-left">Field</th>
+                                    <th class="p-2 text-left">Type</th>
+                                    <th class="p-2 text-left">Constraints</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr><td class="p-2">transaction_id</td><td class="p-2">SERIAL</td><td class="p-2">PRIMARY KEY</td></tr>
+                                <tr><td class="p-2">from_user_id</td><td class="p-2">INTEGER</td><td class="p-2">REFERENCES users</td></tr>
+                                <tr><td class="p-2">to_user_id</td><td class="p-2">INTEGER</td><td class="p-2">REFERENCES users</td></tr>
+                                <tr><td class="p-2">amount</td><td class="p-2">DECIMAL(15,2)</td><td class="p-2">NOT NULL</td></tr>
+                                <tr><td class="p-2">transaction_type</td><td class="p-2">VARCHAR(50)</td><td class="p-2">NOT NULL</td></tr>
+                                <tr><td class="p-2">description</td><td class="p-2">TEXT</td><td class="p-2">-</td></tr>
+                                <tr><td class="p-2">status</td><td class="p-2">VARCHAR(20)</td><td class="p-2">DEFAULT 'pending'</td></tr>
+                                <tr><td class="p-2">reference_number</td><td class="p-2">VARCHAR(50)</td><td class="p-2">UNIQUE</td></tr>
+                                <tr><td class="p-2">created_at</td><td class="p-2">TIMESTAMP</td><td class="p-2">DEFAULT NOW()</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Sessions Table -->
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-key mr-2"></i>
+                        user_sessions
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-200">
+                                <tr>
+                                    <th class="p-2 text-left">Field</th>
+                                    <th class="p-2 text-left">Type</th>
+                                    <th class="p-2 text-left">Constraints</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr><td class="p-2">session_id</td><td class="p-2">SERIAL</td><td class="p-2">PRIMARY KEY</td></tr>
+                                <tr><td class="p-2">user_id</td><td class="p-2">INTEGER</td><td class="p-2">REFERENCES users</td></tr>
+                                <tr><td class="p-2">token</td><td class="p-2">VARCHAR(255)</td><td class="p-2">UNIQUE, NOT NULL</td></tr>
+                                <tr><td class="p-2">expires_at</td><td class="p-2">TIMESTAMP</td><td class="p-2">NOT NULL</td></tr>
+                                <tr><td class="p-2">created_at</td><td class="p-2">TIMESTAMP</td><td class="p-2">DEFAULT NOW()</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- QR Payments Table -->
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-qrcode mr-2"></i>
+                        qr_payments
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-200">
+                                <tr>
+                                    <th class="p-2 text-left">Field</th>
+                                    <th class="p-2 text-left">Type</th>
+                                    <th class="p-2 text-left">Constraints</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr><td class="p-2">qr_id</td><td class="p-2">SERIAL</td><td class="p-2">PRIMARY KEY</td></tr>
+                                <tr><td class="p-2">user_id</td><td class="p-2">INTEGER</td><td class="p-2">REFERENCES users</td></tr>
+                                <tr><td class="p-2">qr_code</td><td class="p-2">TEXT</td><td class="p-2">UNIQUE, NOT NULL</td></tr>
+                                <tr><td class="p-2">amount</td><td class="p-2">DECIMAL(15,2)</td><td class="p-2">-</td></tr>
+                                <tr><td class="p-2">is_used</td><td class="p-2">BOOLEAN</td><td class="p-2">DEFAULT false</td></tr>
+                                <tr><td class="p-2">expires_at</td><td class="p-2">TIMESTAMP</td><td class="p-2">NOT NULL</td></tr>
+                                <tr><td class="p-2">created_at</td><td class="p-2">TIMESTAMP</td><td class="p-2">DEFAULT NOW()</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- API Endpoints -->
+        <section class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <h2 class="text-3xl font-bold text-bank-primary mb-6 flex items-center">
+                <i class="fas fa-plug mr-3"></i>
+                API Endpoints Specification
+            </h2>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Authentication APIs -->
+                <div class="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
+                    <h3 class="text-xl font-semibold text-green-800 mb-4">
+                        <i class="fas fa-shield-alt mr-2"></i>
+                        Authentication
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="bg-white p-3 rounded border-l-2 border-green-400">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-green-500 text-white text-xs px-2 py-1 rounded mr-2">POST</span>
+                                <code class="text-sm">/api/auth/register</code>
+                            </div>
+                            <p class="text-sm text-gray-600">Register new user account</p>
+                        </div>
+                        <div class="bg-white p-3 rounded border-l-2 border-green-400">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-green-500 text-white text-xs px-2 py-1 rounded mr-2">POST</span>
+                                <code class="text-sm">/api/auth/login</code>
+                            </div>
+                            <p class="text-sm text-gray-600">User login with credentials</p>
+                        </div>
+                        <div class="bg-white p-3 rounded border-l-2 border-red-400">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-red-500 text-white text-xs px-2 py-1 rounded mr-2">POST</span>
+                                <code class="text-sm">/api/auth/logout</code>
+                            </div>
+                            <p class="text-sm text-gray-600">Logout and invalidate session</p>
+                        </div>
+                        <div class="bg-white p-3 rounded border-l-2 border-blue-400">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded mr-2">GET</span>
+                                <code class="text-sm">/api/auth/verify</code>
+                            </div>
+                            <p class="text-sm text-gray-600">Verify session token validity</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account APIs -->
+                <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500">
+                    <h3 class="text-xl font-semibold text-blue-800 mb-4">
+                        <i class="fas fa-user-circle mr-2"></i>
+                        Account Management
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="bg-white p-3 rounded border-l-2 border-blue-400">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded mr-2">GET</span>
+                                <code class="text-sm">/api/account/profile</code>
+                            </div>
+                            <p class="text-sm text-gray-600">Get user profile information</p>
+                        </div>
+                        <div class="bg-white p-3 rounded border-l-2 border-yellow-400">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-yellow-500 text-white text-xs px-2 py-1 rounded mr-2">PUT</span>
+                                <code class="text-sm">/api/account/profile</code>
+                            </div>
+                            <p class="text-sm text-gray-600">Update user profile</p>
+                        </div>
+                        <div class="bg-white p-3 rounded border-l-2 border-blue-400">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded mr-2">GET</span>
+                                <code class="text-sm">/api/account/balance</code>
+                            </div>
+                            <p class="text-sm text-gray-600">Get account balance</p>
+                        </div>
+                        <div class="bg-white p-3 rounded border-l-2 border-blue-400">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded mr-2">GET</span>
+                                <code class="text-sm">/api/account/wallet</code>
+                            </div>
+                            <p class="text-sm text-gray-600">Get wallet balance</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction APIs -->
+                <div class="bg-purple-50 p-6 rounded-lg border-l-4 border-purple-500">
+                    <h3 class="text-xl font-semibold text-purple-800 mb-4">
+                        <i class="fas fa-exchange-alt mr-2"></i>
+                        Transactions
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="bg-white p-3 rounded border-l-2 border-green-400">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-green-500 text-white text-xs px-2 py-1 rounded mr-2">POST</span>
+                                <code class="text-sm">/api/transactions/transfer</code>
+                            </div>
+                            <p class="text-sm text-gray-600">Transfer money between accounts</p>
+                        </div>
+                        <div class="bg-white p-3 rounded border-l-2 border-green-400">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-green-500 text-white text-xs px-2 py-1 rounded mr-2">POST</span>
+                                <code class="text-sm">/api/transactions/deposit</code>
+                            </div>
+                            <p class="text-sm text-gray-600">Deposit money to account</p>
+                        </div>
+                        <div class="bg-white p-3 rounded border-l-2 border-green-400">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-green-500 text-white text-xs px-2 py-1 rounded mr-2">POST</span>
+                                <code class="text-sm">/api/transactions/withdraw</code>
+                            </div>
+                            <p class="text-sm text-gray-600">Withdraw money from account</p>
+                        </div>
+                        <div class="bg-white p-3 rounded border-l-2 border-blue-400">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded mr-2">GET</span>
+                                <code class="text-sm">/api/transactions/history</code>
+                            </div>
+                            <p class="text-sm text-gray-600">Get transaction history</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QR & Wallet APIs -->
+                <div class="bg-orange-50 p-6 rounded-lg border-l-4 border-orange-500">
+                    <h3 class="text-xl font-semibold text-orange-800 mb-4">
+                        <i class="fas fa-qrcode mr-2"></i>
+                        QR & Wallet
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="bg-white p-3 rounded border-l-2 border-green-400">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-green-500 text-white text-xs px-2 py-1 rounded mr-2">POST</span>
+                                <code class="text-sm">/api/qr/generate</code>
+                            </div>
+                            <p class="text-sm text-gray-600">Generate payment QR code</p>
+                        </div>
+                        <div class="bg-white p-3 rounded border-l-2 border-green-400">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-green-500 text-white text-xs px-2 py-1 rounded mr-2">POST</span>
+                                <code class="text-sm">/api/qr/scan</code>
+                            </div>
+                            <p class="text-sm text-gray-600">Process scanned QR payment</p>
+                        </div>
+                        <div class="bg-white p-3 rounded border-l-2 border-green-400">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-green-500 text-white text-xs px-2 py-1 rounded mr-2">POST</span>
+                                <code class="text-sm">/api/wallet/topup</code>
+                            </div>
+                            <p class="text-sm text-gray-600">Top up wallet balance</p>
+                        </div>
+                        <div class="bg-white p-3 rounded border-l-2 border-green-400">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-green-500 text-white text-xs px-2 py-1 rounded mr-2">POST</span>
+                                <code class="text-sm">/api/wallet/pay</code>
+                            </div>
+                            <p class="text-sm text-gray-600">Make wallet payment</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Security Implementation -->
+        <section class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <h2 class="text-3xl font-bold text-bank-primary mb-6 flex items-center">
+                <i class="fas fa-lock mr-3"></i>
+                Security Implementation
+            </h2>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Authentication Security -->
+                <div class="bg-red-50 p-6 rounded-lg border-l-4 border-red-500">
+                    <h3 class="text-lg font-semibold text-red-800 mb-4">
+                        <i class="fas fa-shield-alt mr-2"></i>
+                        Authentication
+                    </h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                            <span>bcrypt password hashing with salt rounds</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                            <span>JWT tokens for session management</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                            <span>Token expiration and refresh mechanism</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                            <span>Rate limiting for login attempts</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Data Security -->
+                <div class="bg-yellow-50 p-6 rounded-lg border-l-4 border-yellow-500">
+                    <h3 class="text-lg font-semibold text-yellow-800 mb-4">
+                        <i class="fas fa-database mr-2"></i>
+                        Data Protection
+                    </h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                            <span>SQL injection prevention with parameterized queries</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                            <span>Input validation and sanitization</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                            <span>Sensitive data encryption at rest</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                            <span>HTTPS enforcement for all communications</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Transaction Security -->
+                <div class="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
+                    <h3 class="text-lg font-semibold text-green-800 mb-4">
+                        <i class="fas fa-exchange-alt mr-2"></i>
+                        Transaction Safety
+                    </h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                            <span>Database transactions with rollback support</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                            <span>Atomic operations for money transfers</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                            <span>Balance verification before transactions</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                            <span>Comprehensive audit logging</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Frontend Integration Guide -->
+        <section class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <h2 class="text-3xl font-bold text-bank-primary mb-6 flex items-center">
+                <i class="fas fa-code mr-3"></i>
+                Frontend Integration Guide
+            </h2>
+
+            <div class="space-y-8">
+                <!-- JavaScript Integration -->
+                <div class="bg-blue-50 p-6 rounded-lg">
+                    <h3 class="text-lg font-semibold text-blue-800 mb-4">
+                        <i class="fas fa-code mr-2"></i>
+                        JavaScript API Integration Examples
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Login Function -->
+                        <div class="bg-white p-4 rounded border">
+                            <h4 class="font-semibold text-gray-800 mb-2">Login Function Modification</h4>
+                            <pre class="bg-gray-100 p-3 rounded text-xs overflow-x-auto">
+<code>// Replace existing login function
+async function login() {
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  
+  try {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok) {
+      localStorage.setItem('token', data.token);
+      showCustomerDashboard();
+    } else {
+      alert('Login failed: ' + data.message);
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+  }
+}</code>
+                            </pre>
+                        </div>
+
+                        <!-- Transfer Function -->
+                        <div class="bg-white p-4 rounded border">
+                            <h4 class="font-semibold text-gray-800 mb-2">Money Transfer Function</h4>
+                            <pre class="bg-gray-100 p-3 rounded text-xs overflow-x-auto">
+<code>// Replace existing transfer function
+async function transfer() {
+  const toAccount = document.getElementById('transferAccount').value;
+  const amount = document.getElementById('transferAmount').value;
+  const description = document.getElementById('transferDescription').value;
+  
+  try {
+    const response = await fetch('/api/transactions/transfer', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({ 
+        toAccount, 
+        amount: parseFloat(amount), 
+        description 
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok) {
+      alert('Transfer successful!');
+      updateBalance();
+      loadTransactionHistory();
+    } else {
+      alert('Transfer failed: ' + data.message);
+    }
+  } catch (error) {
+    console.error('Transfer error:', error);
+  }
+}</code>
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Authentication State Management -->
+                <div class="bg-green-50 p-6 rounded-lg">
+                    <h3 class="text-lg font-semibold text-green-800 mb-4">
+                        <i class="fas fa-shield-alt mr-2"></i>
+                        Authentication State Management
+                    </h3>
+                    <pre class="bg-white p-4 rounded text-sm overflow-x-auto">
+<code>// Add to existing JavaScript
+function checkAuthState() {
+  const token = localStorage.getItem('token');
+  
+  if (token) {
+    // Verify token with backend
+    fetch('/api/auth/verify', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then(response => {
+      if (response.ok) {
+        showCustomerDashboard();
+      } else {
+        localStorage.removeItem('token');
+        showWelcome();
+      }
+    })
+    .catch(() => {
+      localStorage.removeItem('token');
+      showWelcome();
+    });
+  } else {
+    showWelcome();
+  }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', checkAuthState);</code>
+                    </pre>
+                </div>
+
+                <!-- Data Loading Functions -->
+                <div class="bg-purple-50 p-6 rounded-lg">
+                    <h3 class="text-lg font-semibold text-purple-800 mb-4">
+                        <i class="fas fa-download mr-2"></i>
+                        Dynamic Data Loading
+                    </h3>
+                    <pre class="bg-white p-4 rounded text-sm overflow-x-auto">
+<code>// Replace static data with API calls
+async function loadUserProfile() {
+  const response = await fetch('/api/account/profile', {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  });
+  
+  const user = await response.json();
+  
+  // Update UI elements
+  document.getElementById('userName').textContent = user.fullName;
+  document.getElementById('userAccount').textContent = user.accountNumber;
+  document.getElementById('userBalance').textContent = `$${user.balance.toFixed(2)}`;
+}
+
+async function loadTransactionHistory() {
+  const response = await fetch('/api/transactions/history', {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  });
+  
+  const transactions = await response.json();
+  
+  // Update transaction table
+  const tbody = document.getElementById('transactionTableBody');
+  tbody.innerHTML = transactions.map(t => `
+    &lt;tr&gt;
+      &lt;td&gt;${new Date(t.created_at).toLocaleDateString()}&lt;/td&gt;
+      &lt;td&gt;${t.transaction_type}&lt;/td&gt;
+      &lt;td&gt;$${t.amount.toFixed(2)}&lt;/td&gt;
+      &lt;td&gt;${t.description}&lt;/td&gt;
+      &lt;td&gt;${t.status}&lt;/td&gt;
+    &lt;/tr&gt;
+  `).join('');
+}</code>
+                    </pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Implementation Timeline -->
+        <section class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <h2 class="text-3xl font-bold text-bank-primary mb-6 flex items-center">
+                <i class="fas fa-calendar-alt mr-3"></i>
+                Implementation Timeline
+            </h2>
+
+            <div class="space-y-6">
+                <!-- Phase 1 -->
+                <div class="flex items-start space-x-4">
+                    <div class="bg-bank-primary text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">1</div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Database Setup & Basic API (Week 1-2)</h3>
+                        <ul class="space-y-1 text-sm text-gray-600">
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>PostgreSQL database setup</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Create database schema and tables</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Express.js server setup</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Basic authentication endpoints</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Phase 2 -->
+                <div class="flex items-start space-x-4">
+                    <div class="bg-bank-light text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">2</div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Core Banking Features (Week 3-4)</h3>
+                        <ul class="space-y-1 text-sm text-gray-600">
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Account management endpoints</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Transaction processing system</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Balance management and validation</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Transaction history tracking</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Phase 3 -->
+                <div class="flex items-start space-x-4">
+                    <div class="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">3</div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Frontend Integration (Week 5-6)</h3>
+                        <ul class="space-y-1 text-sm text-gray-600">
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Update existing JavaScript functions</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Implement API calls and error handling</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Dynamic data loading and updates</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Session management integration</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Phase 4 -->
+                <div class="flex items-start space-x-4">
+                    <div class="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">4</div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Advanced Features & QR Integration (Week 7-8)</h3>
+                        <ul class="space-y-1 text-sm text-gray-600">
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>QR code generation and processing</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Wallet functionality implementation</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Enhanced security features</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Comprehensive testing and debugging</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technology Stack -->
+        <section class="bg-white rounded-xl shadow-lg p-8">
+            <h2 class="text-3xl font-bold text-bank-primary mb-6 flex items-center">
+                <i class="fas fa-layer-group mr-3"></i>
+                Technology Stack
+            </h2>
+
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Frontend -->
+                <div class="text-center p-6 bg-blue-50 rounded-lg">
+                    <i class="fas fa-desktop text-4xl text-blue-600 mb-4"></i>
+                    <h3 class="text-lg font-semibold text-blue-800 mb-2">Frontend</h3>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>HTML5/CSS3</li>
+                        <li>JavaScript ES6+</li>
+                        <li>Chart.js</li>
+                        <li>QR Scanner</li>
+                    </ul>
+                </div>
+
+                <!-- Backend -->
+                <div class="text-center p-6 bg-green-50 rounded-lg">
+                    <i class="fas fa-server text-4xl text-green-600 mb-4"></i>
+                    <h3 class="text-lg font-semibold text-green-800 mb-2">Backend</h3>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>Node.js</li>
+                        <li>Express.js</li>
+                        <li>JWT Authentication</li>
+                        <li>bcrypt</li>
+                    </ul>
+                </div>
+
+                <!-- Database -->
+                <div class="text-center p-6 bg-purple-50 rounded-lg">
+                    <i class="fas fa-database text-4xl text-purple-600 mb-4"></i>
+                    <h3 class="text-lg font-semibold text-purple-800 mb-2">Database</h3>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>PostgreSQL</li>
+                        <li>Connection Pooling</li>
+                        <li>Migrations</li>
+                        <li>Indexing</li>
+                    </ul>
+                </div>
+
+                <!-- Security -->
+                <div class="text-center p-6 bg-red-50 rounded-lg">
+                    <i class="fas fa-shield-alt text-4xl text-red-600 mb-4"></i>
+                    <h3 class="text-lg font-semibold text-red-800 mb-2">Security</h3>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>HTTPS/SSL</li>
+                        <li>CORS Protection</li>
+                        <li>Rate Limiting</li>
+                        <li>Data Validation</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-bank-primary to-bank-light text-white py-6 mt-12">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-lg">
+                <i class="fas fa-code mr-2"></i>
+                Complete Backend Architecture for E-Banking System
+            </p>
+            <p class="text-sm opacity-80 mt-2">
+                Production-ready design preserving all existing frontend functionality
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // TODO: Implement backend functionality as per specification
+        // This is a design mockup - actual implementation would require:
+        // - Node.js/Express server setup
+        // - PostgreSQL database configuration
+        // - JWT authentication implementation
+        // - API endpoint development
+        // - Frontend integration updates
+        
+        console.log("Backend architecture design loaded");
+        console.log("Ready for implementation following the specification above");
+    </script>
+</body>
+</html>

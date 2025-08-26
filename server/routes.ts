@@ -3,8 +3,10 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
-import { loginUserSchema, adminLoginSchema, transactionSchema } from "@shared/schema";
+import { loginUserSchema, adminLoginSchema, transactionSchema, chatbotQuerySchema } from "@shared/schema";
 import { z } from "zod";
+import { ChatbotService } from "./chatbot-service";
+import { FraudDetectionService } from "./fraud-detection";
 
 // Middleware for authentication
 const authenticate = async (req: any, res: any, next: any) => {
@@ -508,6 +510,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error('Admin stats error:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+
+  // Chatbot endpoints
+  app.post('/api/chatbot/query', authenticate, async (req, res) => {
+    try {
+      const { query } = chatbotQuerySchema.parse(req.body);
+      const user = req.user;
+
+      const response = await ChatbotService.processQuery(query, user);
+      
+      // Save conversation to database
+      await storage.createChatbotConversation({
+        userId: user.id,
+        query,
+        response: response.response,
+        queryType: response.queryType,
+        isResolved: response.isResolved
+      });
+
+      res.json(response);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: 'Invalid input', errors: error.errors });
+      }
+      console.error('Chatbot query error:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+
+  app.get('/api/chatbot/history', authenticate, async (req, res) => {
+    try {
+      const conversations = await storage.getChatbotConversationsByUserId(req.user.id);
+      res.json(conversations);
+    } catch (error) {
+      console.error('Chatbot history error:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+
+  // Fraud detection endpoints
+  app.get('/api/fraud/alerts', authenticateAdmin, async (req, res) => {
+    try {
+      const alerts = await storage.getFraudAlerts();
+      res.json(alerts);
+    } catch (error) {
+      console.error('Fraud alerts error:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+
+  app.put('/api/fraud/alerts/:id/status', authenticateAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      
+      if (!['reviewed', 'false_positive', 'confirmed_fraud'].includes(status)) {
+        return res.status(400).json({ message: 'Invalid status' });
+      }
+
+      await storage.updateFraudAlertStatus(parseInt(id), status, req.user.id);
+      res.json({ message: 'Fraud alert status updated successfully' });
+    } catch (error) {
+      console.error('Update fraud alert error:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+
+  app.get('/api/fraud/user-alerts', authenticate, async (req, res) => {
+    try {
+      const alerts = await storage.getFraudAlertsByUserId(req.user.id);
+      res.json(alerts);
+    } catch (error) {
+      console.error('User fraud alerts error:', error);
       res.status(500).json({ message: 'Internal server error' });
     }
   });
