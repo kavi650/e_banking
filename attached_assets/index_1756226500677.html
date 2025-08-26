@@ -1,0 +1,2218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Secure e-Banking System</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <style>
+    :root {
+      --primary: #0053ba;    /* Dark Blue */
+      --primary-dark: #00addb; /* Light Blue */
+      --secondary: #6c757d;
+      --success: #28a745;
+      --danger: #dc3545;
+      --warning: #ffc107;
+      --light: #f8f9fa;
+      --dark: #343a40;
+      --background: #f4f8fb;
+      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--background) 0%, #e6f0f7 100%);
+      color: #333;
+      min-height: 100vh;
+      padding: 20px;
+      padding-bottom: 110px; /* For footer */
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      color: var(--primary);
+    }
+
+    h2 {
+      text-align: center;
+      padding: 1rem 0;
+      background: linear-gradient(to right, var(--primary), var(--primary-dark));
+      color: white;
+      margin: 0;
+    }
+
+    .header {
+      background: linear-gradient(to right, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+      border-radius: 12px 12px 0 0;
+      position: relative;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2rem;
+      margin: 0;
+    }
+
+    .header p {
+      opacity: 0.9;
+      margin-top: 0.5rem;
+    }
+
+    .welcome-container {
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .welcome-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+
+    .panel {
+      padding: 1.5rem;
+    }
+
+    input,
+    select,
+    button {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 16px;
+      transition: var(--transition);
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 83, 186, 0.2);
+    }
+
+    button {
+      background: linear-gradient(to right, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      padding: 14px;
+      transition: var(--transition);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(to right, var(--secondary), #5a6268);
+    }
+
+    .btn-danger {
+      background: linear-gradient(to right, var(--danger), #c82333);
+    }
+
+    .section {
+      margin-bottom: 1.5rem;
+      padding: 1.5rem;
+      border: 1px solid #e1e8ed;
+      border-radius: 10px;
+      background: white;
+      box-shadow: var(--card-shadow);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .profile-info p {
+      margin: 12px 0;
+      font-size: 1.1em;
+      display: flex;
+      justify-content: space-between;
+      max-width: 500px;
+    }
+
+    .profile-info strong {
+      color: var(--primary);
+      min-width: 150px;
+    }
+
+    .profile-row {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #e9ecef;
+      font-size: 1.1em;
+    }
+
+    .profile-row:last-child {
+      border-bottom: none;
+    }
+
+    .profile-row strong {
+      color: var(--primary);
+      font-weight: 600;
+      width: 200px;
+      flex-shrink: 0;
+      display: inline-block;
+    }
+
+    .profile-row span {
+      margin-left: 20px;
+      flex: 1;
+    }
+
+    .balance-amount {
+      color: var(--success);
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+
+    /* Customer Header with Logout */
+    .customer-header {
+      background: linear-gradient(to right, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }
+
+    .customer-header h2 {
+      color: white;
+      margin: 0;
+      background: none;
+      padding: 0;
+    }
+
+    .customer-logout-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s ease;
+      width: auto;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .customer-logout-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Main Navigation Section */
+    .main-nav-section {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      border-radius: 12px;
+      border: 1px solid #dee2e6;
+    }
+
+    .main-customer-nav {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .main-customer-nav button {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.2rem 0.8rem;
+      border-radius: 10px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      min-height: 90px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Unique colors for each button */
+    .main-customer-nav button:nth-child(1) {
+      background: #e3f2fd;
+      color: #1976d2;
+      border-color: #1976d2;
+    }
+
+    .main-customer-nav button:nth-child(2) {
+      background: #f3e5f5;
+      color: #7b1fa2;
+      border-color: #7b1fa2;
+    }
+
+    .main-customer-nav button:nth-child(3) {
+      background: #e8f5e8;
+      color: #388e3c;
+      border-color: #388e3c;
+    }
+
+    .main-customer-nav button i {
+      font-size: 2rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .main-customer-nav button span {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .main-customer-nav button:hover,
+    .main-customer-nav button.active {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .main-customer-nav button:nth-child(1):hover,
+    .main-customer-nav button:nth-child(1).active {
+      background: #1976d2;
+      color: white;
+    }
+
+    .main-customer-nav button:nth-child(2):hover,
+    .main-customer-nav button:nth-child(2).active {
+      background: #7b1fa2;
+      color: white;
+    }
+
+    .main-customer-nav button:nth-child(3):hover,
+    .main-customer-nav button:nth-child(3).active {
+      background: #388e3c;
+      color: white;
+    }
+
+    /* Operations Navigation */
+    .operations-nav {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .operations-nav button {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem 0.8rem;
+      border-radius: 8px;
+      border: 2px solid var(--primary);
+      background: white;
+      color: var(--primary);
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      min-height: 80px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .operations-nav button i {
+      font-size: 1.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .operations-nav button span {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .operations-nav button:hover,
+    .operations-nav button.active {
+      background: var(--primary);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 83, 186, 0.3);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border: 1px solid #e1e8ed;
+      text-align: left;
+    }
+
+    th {
+      background: linear-gradient(to right, var(--primary), var(--primary-dark));
+      color: white;
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+
+    tr:hover {
+      background-color: #e9ecef;
+    }
+
+    .balance-display {
+      text-align: center;
+      font-size: 2rem;
+      margin: 1.5rem 0;
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    #walletBalanceDisplay {
+      background: #fff3cd;
+      color: #856404;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      padding: 0.75rem 0;
+      border-radius: 8px;
+    }
+
+    /* Footer Nav */
+    .footer-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: linear-gradient(to right, var(--primary), var(--primary-dark));
+      border-top: 1px solid #ddd;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.15);
+      padding: 8px 12px;
+      z-index: 9999;
+    }
+
+    .footer-nav button {
+      flex: 1;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      max-width: 80px;
+      padding: 8px 4px;
+      margin: 0;
+    }
+
+    .footer-nav i {
+      font-size: 20px;
+      margin-bottom: 4px;
+      color: white;
+    }
+
+    /* Special Scan & Pay Button */
+    .footer-nav .scan-btn {
+      background: white;
+      color: var(--primary-dark);
+      font-size: 32px;
+      border-radius: 50%;
+      width: 70px;
+      height: 70px;
+      margin-top: -25px;
+      margin-bottom: 0;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s ease;
+      flex-shrink: 0;
+      border: none;
+      cursor: pointer;
+    }
+
+    .footer-nav .scan-btn i {
+      color: var(--primary-dark);
+      font-size: 28px;
+    }
+
+    .footer-nav .scan-btn:hover {
+      background: #f0f7ff;
+      color: var(--primary);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      transform: scale(1.05);
+    }
+
+    .footer-nav .scan-btn:hover i {
+      color: var(--primary);
+    }
+
+    /* Scanner modal styles */
+    .qr-scanner-modal {
+      position: fixed;
+      z-index: 10000;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .qr-scanner-video {
+      max-width: 90vw;
+      max-height: 60vh;
+      border-radius: 12px;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+      background: #111;
+    }
+
+    .qr-close-btn {
+      margin-top: 20px;
+      background: var(--danger);
+      color: white;
+      border: none;
+      padding: 12px 32px;
+      font-size: 18px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    /* Admin Panel styles */
+    .admin-panel {
+      margin: 20px;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 15px;
+      position: relative;
+      padding: 0 60px;
+    }
+
+    .admin-header h2 {
+      color: var(--primary);
+      background: none;
+      padding: 0;
+      margin: 0;
+      flex: 1;
+      text-align: center;
+    }
+
+    .btn-logout {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--danger);
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      width: auto;
+      margin: 0;
+    }
+
+    .btn-logout:hover {
+      background: #a71d2a;
+    }
+
+    .admin-nav {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .admin-nav button {
+      background: var(--primary);
+      border: none;
+      color: white;
+      cursor: pointer;
+      padding: 12px 18px;
+      font-size: 15px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      transition: background 0.3s ease;
+      flex: 1;
+      justify-content: center;
+      margin: 0;
+    }
+
+    .admin-nav button:hover,
+    .admin-nav button.active {
+      background: var(--primary-dark);
+    }
+
+    .admin-content .admin-page {
+      display: none;
+    }
+
+    .admin-content .admin-page.active {
+      display: block;
+    }
+
+    /* Users page styles */
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stats-card {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 25px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.3s ease;
+    }
+
+    .stats-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .stats-icon {
+      font-size: 2.5rem;
+      opacity: 0.8;
+    }
+
+    .stats-info h4 {
+      color: white;
+      font-size: 1.8rem;
+      margin: 0;
+      font-weight: bold;
+    }
+
+    .stats-info p {
+      color: rgba(255, 255, 255, 0.9);
+      margin: 5px 0 0 0;
+      font-size: 0.9rem;
+    }
+
+    .users-table-container {
+      margin-top: 20px;
+    }
+
+    .users-table-container h4 {
+      color: var(--primary);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Analytics and Charts Styles */
+    .analytics-section {
+      margin-bottom: 30px;
+    }
+
+    .analytics-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .analytics-header h4 {
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+    }
+
+    .chart-period-selector {
+      display: flex;
+      gap: 10px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 4px;
+      border: 1px solid #dee2e6;
+    }
+
+    .period-btn {
+      background: transparent;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--secondary);
+      transition: all 0.3s ease;
+      margin: 0;
+      width: auto;
+    }
+
+    .period-btn:hover,
+    .period-btn.active {
+      background: var(--primary);
+      color: white;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .chart-container {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: var(--card-shadow);
+      height: 400px;
+      position: relative;
+    }
+
+    .chart-wrapper {
+      position: relative;
+      height: 100%;
+      width: 100%;
+    }
+
+    .no-data-message {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--secondary);
+      font-size: 1.1rem;
+    }
+
+    @media (max-width: 768px) {
+      .main-customer-nav {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .main-customer-nav button {
+        min-height: 100px;
+        padding: 1.5rem 1rem;
+      }
+
+      .main-customer-nav button i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .operations-nav {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .operations-nav button {
+        min-height: 80px;
+        padding: 1rem;
+      }
+
+      .operations-nav button i {
+        font-size: 1.5rem;
+      }
+
+      .welcome-buttons {
+        flex-direction: column;
+      }
+      .profile-info p {
+        flex-direction: column;
+      }
+      .profile-row {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+      }
+      .profile-row span {
+        text-align: left;
+        margin-left: 0;
+        margin-top: 5px;
+      }
+      .footer-nav {
+        font-size: 12px;
+        padding: 6px 6px;
+      }
+      .footer-nav .scan-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+        margin-top: -20px;
+      }
+      .footer-nav .scan-btn i {
+        font-size: 20px;
+      }
+
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+
+      .analytics-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .chart-period-selector {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .period-btn {
+        flex: 1;
+        padding: 10px 8px;
+        font-size: 0.9rem;
+      }
+
+      .chart-container {
+        height: 300px;
+        padding: 15px;
+      }
+
+      .admin-nav {
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .admin-nav button {
+        flex: 1 1 calc(50% - 5px);
+        min-width: 140px;
+        padding: 10px 8px;
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-landmark"></i> Secure e-Banking System</h1>
+      <p>Your trusted partner in digital finance</p>
+    </div>
+
+    <div id="landingPage">
+      <div class="welcome-container">
+        <h2>Welcome to Our Banking Portal</h2>
+        <p>Please select your login portal to continue</p>
+        <div class="welcome-buttons">
+          <button onclick="showUserLogin()"><i class="fas fa-user"></i> User Login</button>
+          <button onclick="showAdminLogin()"><i class="fas fa-lock"></i> Admin Login</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="userLoginPanel" class="hidden panel">
+      <h2><i class="fas fa-user"></i> User Login</h2>
+      <div class="form-group">
+        <input type="text" id="userLoginId" placeholder="Mobile Number" />
+      </div>
+      <div class="form-group">
+        <input type="password" id="userLoginPin" placeholder="PIN" />
+      </div>
+      <button onclick="loginUser()"><i class="fas fa-sign-in-alt"></i> Login</button>
+      <button class="btn-secondary" onclick="goHome()"
+        ><i class="fas fa-arrow-left"></i> Back to Home</button
+      >
+    </div>
+
+    <div id="adminLoginPanel" class="hidden panel">
+      <h2><i class="fas fa-lock"></i> Admin Login</h2>
+      <div class="form-group">
+        <input type="text" id="adminLoginId" placeholder="Admin ID" />
+      </div>
+      <div class="form-group">
+        <input type="password" id="adminLoginPassword" placeholder="Password" />
+      </div>
+      <button onclick="loginAdmin()"><i class="fas fa-sign-in-alt"></i> Login</button>
+      <button class="btn-secondary" onclick="goHome()"
+        ><i class="fas fa-arrow-left"></i> Back to Home</button
+      >
+    </div>
+
+    <!-- Admin panel inserted dynamically -->
+
+    <div id="customerPanel" class="hidden">
+      <div class="customer-header">
+        <h2><i class="fas fa-user-circle"></i> Customer Dashboard</h2>
+        <button onclick="logout()" class="customer-logout-btn">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+      <div class="panel">
+        <p style="text-align: center; font-size: 1.2em">
+          Welcome, <span id="customerNameDisplay"></span>!
+        </p>
+        <div id="balanceDisplay" class="balance-display"></div>
+        <div
+          id="walletBalanceDisplay"
+          class="balance-display"
+          style="background: #fff3cd; color: #856404"
+        >
+          Wallet Balance: ₹0.00
+        </div>
+
+        <div class="main-nav-section">
+          <h3 style="text-align: center; margin-bottom: 1rem; color: var(--primary);">
+            <i class="fas fa-th-large"></i> Main Menu
+          </h3>
+          <div class="main-customer-nav">
+            <button id="btnOperations" onclick="showCustomerView('operations')">
+              <i class="fas fa-cogs"></i>
+              <span>Operations</span>
+            </button>
+            <button id="btnProfile" onclick="showCustomerView('profile')">
+              <i class="fas fa-id-card"></i>
+              <span>Profile</span>
+            </button>
+            <button id="btnHistory" onclick="showCustomerView('history')">
+              <i class="fas fa-history"></i>
+              <span>History</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="profileView" class="section hidden">
+          <div class="section-title">
+            <i class="fas fa-id-card"></i>
+            <h3>Your Profile</h3>
+          </div>
+          <div class="profile-info">
+            <div class="profile-row">
+              <strong>Name:</strong> 
+              <span id="profileName"></span>
+            </div>
+            <div class="profile-row">
+              <strong>Account Number:</strong> 
+              <span id="profileAccNum"></span>
+            </div>
+            <div class="profile-row">
+              <strong>Mobile Number:</strong> 
+              <span id="profileMobile"></span>
+            </div>
+            <div class="profile-row">
+              <strong>Address:</strong> 
+              <span id="profileAddress"></span>
+            </div>
+            <div class="profile-row">
+              <strong>Date of Birth:</strong> 
+              <span id="profileDob"></span>
+            </div>
+            <div class="profile-row">
+              <strong>Aadhar Number:</strong> 
+              <span id="profileAadhar"></span>
+            </div>
+            <div class="profile-row">
+              <strong>Account Balance:</strong> 
+              <span id="profileBalance" class="balance-amount"></span>
+            </div>
+            <div class="profile-row">
+              <strong>Wallet Balance:</strong> 
+              <span id="profileWalletBalance" class="balance-amount"></span>
+            </div>
+          </div>
+        </div>
+
+        <div id="operationsView" class="section">
+          <div class="section-title">
+            <i class="fas fa-cogs"></i>
+            <h3>Account Operations</h3>
+          </div>
+          <div class="operations-nav">
+            <button id="btnDeposit" onclick="toggleOperation('deposit')">
+              <i class="fas fa-money-bill-wave"></i>
+              <span>Deposit</span>
+            </button>
+            <button id="btnWithdraw" onclick="toggleOperation('withdraw')">
+              <i class="fas fa-hand-holding-usd"></i>
+              <span>Withdraw to Wallet</span>
+            </button>
+            <button id="btnTransfer" onclick="toggleOperation('transfer')">
+              <i class="fas fa-exchange-alt"></i>
+              <span>Transfer</span>
+            </button>
+          </div>
+          <div class="operation-forms">
+            <div id="depositForm" class="hidden">
+              <h4><i class="fas fa-money-bill-wave"></i> Deposit Money</h4>
+              <div class="form-group">
+                <input type="password" id="depositPin" placeholder="Enter PIN" />
+              </div>
+              <div class="form-group">
+                <input type="number" id="depositAmount" placeholder="Amount" />
+              </div>
+              <button onclick="depositMoney()"><i class="fas fa-plus-circle"></i> Deposit</button>
+            </div>
+            <div id="withdrawForm" class="hidden">
+              <h4><i class="fas fa-hand-holding-usd"></i> Withdraw Money (to Wallet)</h4>
+              <div class="form-group">
+                <input type="password" id="withdrawPin" placeholder="Enter PIN" />
+              </div>
+              <div class="form-group">
+                <input type="number" id="withdrawAmount" placeholder="Amount" />
+              </div>
+              <button onclick="withdrawMoney()"><i class="fas fa-wallet"></i> Withdraw to Wallet</button>
+            </div>
+            <div id="transferForm" class="hidden">
+              <h4><i class="fas fa-exchange-alt"></i> Transfer Money</h4>
+              <div class="form-group">
+                <input type="password" id="transferPin" placeholder="Enter PIN" />
+              </div>
+              <div class="form-group">
+                <input type="text" id="transferAccNum" placeholder="Destination Account Number" />
+              </div>
+              <div class="form-group">
+                <input type="number" id="transferAmount" placeholder="Amount" />
+              </div>
+              <button onclick="transferMoney()"><i class="fas fa-paper-plane"></i> Transfer</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="historyView" class="section hidden">
+          <div class="section-title">
+            <i class="fas fa-history"></i>
+            <h3>Transaction History</h3>
+          </div>
+          <div id="customerTransactionHistoryDisplay"></div>
+        </div>
+        
+        <div class="footer-nav" id="customerFooterNav">
+          <button onclick="showCustomerView('profile')">
+            <i class="fas fa-user"></i><br />Profile
+          </button>
+
+          <button
+            class="scan-btn"
+            onclick="openScanner()"
+            aria-label="Scan and Pay"
+            title="Scan and Pay"
+          >
+            <i class="fas fa-qrcode"></i>
+          </button>
+
+          <button onclick="showWalletBalance()">
+            <i class="fas fa-wallet"></i><br />Wallet
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Scanner Modal -->
+  <div id="qrScannerModal" class="qr-scanner-modal hidden" aria-hidden="true">
+    <video id="qrVideo" class="qr-scanner-video" autoplay playsinline></video>
+    <button class="qr-close-btn" onclick="closeScannerModal()">Close</button>
+  </div>
+
+<script>
+  // Generate random 8-digit account number
+  const generateAccountNumber = () =>
+    Math.floor(10000000 + Math.random() * 90000000).toString();
+
+  // Memory storage instead of localStorage for artifacts
+  let accounts = [
+    {
+      name: "kavi",
+      mobile: "1234567890",
+      address: "123 Main Street, New York, NY 10001",
+      dob: "1990-01-15",
+      aadhar: "123456789012",
+      accountNumber: "12345678",
+      pin: "1234",
+      balance: 5000,
+      walletBalance: 500
+    },
+    {
+      name: "arun",
+      mobile: "9876543210",
+      address: "456 Oak Avenue, Los Angeles, CA 90210",
+      dob: "1985-03-22",
+      aadhar: "987654321098",
+      accountNumber: "87654321",
+      pin: "5678",
+      balance: 7500,
+      walletBalance: 750
+    },
+    {
+      name: "gokul",
+      mobile: "5551234567",
+      address: "789 Pine Road, Chicago, IL 60601",
+      dob: "1992-07-08",
+      aadhar: "456789123456",
+      accountNumber: "45678912",
+      pin: "9876",
+      balance: 3200,
+      walletBalance: 320
+    }
+  ];
+  
+  let transactions = [
+    {
+      date: "2024-08-15",
+      type: "deposit",
+      amount: 1000,
+      fromAccount: null,
+      toAccount: "12345678"
+    },
+    {
+      date: "2024-08-16",
+      type: "transfer",
+      amount: 500,
+      fromAccount: "12345678",
+      toAccount: "87654321"
+    },
+    {
+      date: "2024-08-17",
+      type: "withdrawal-to-wallet",
+      amount: 200,
+      fromAccount: "87654321",
+      toAccount: null
+    },
+    {
+      date: "2024-08-18",
+      type: "deposit",
+      amount: 1500,
+      fromAccount: null,
+      toAccount: "45678912"
+    },
+    {
+      date: "2024-08-19",
+      type: "transfer",
+      amount: 300,
+      fromAccount: "45678912",
+      toAccount: "12345678"
+    },
+    {
+      date: "2024-08-20",
+      type: "wallet-payment",
+      amount: 150,
+      fromAccount: "12345678",
+      toAccount: "Merchant QR123"
+    },
+    {
+      date: "2024-08-21",
+      type: "deposit",
+      amount: 800,
+      fromAccount: null,
+      toAccount: "87654321"
+    },
+    {
+      date: "2024-08-22",
+      type: "withdrawal-to-wallet",
+      amount: 400,
+      fromAccount: "12345678",
+      toAccount: null
+    }
+  ];
+
+  // Chart variables
+  let activityChart = null;
+  let currentPeriod = 'daily';
+
+  // Save current data (in memory for artifacts)
+  const saveData = () => {
+    // Data persists in memory during session
+  };
+
+  let currentUser = null;
+
+  // DOM elements
+  const landingPage = document.getElementById("landingPage");
+  const userLoginPanel = document.getElementById("userLoginPanel");
+  const adminLoginPanel = document.getElementById("adminLoginPanel");
+  const customerPanel = document.getElementById("customerPanel");
+  const balanceDisplay = document.getElementById("balanceDisplay");
+  const walletBalanceDisplay = document.getElementById("walletBalanceDisplay");
+  const qrScannerModal = document.getElementById("qrScannerModal");
+  const qrVideo = document.getElementById("qrVideo");
+  let cameraStream = null;
+
+  const allPanels = [
+    landingPage,
+    userLoginPanel,
+    adminLoginPanel,
+    customerPanel,
+  ];
+
+  // --- Navigation Functions ---
+  const hideAllPanels = () => {
+    allPanels.forEach((p) => p.classList.add("hidden"));
+    ensureScannerHidden();
+  };
+
+  const showUserLogin = () => {
+    hideAllPanels();
+    userLoginPanel.classList.remove("hidden");
+  };
+
+  const showAdminLogin = () => {
+    hideAllPanels();
+    adminLoginPanel.classList.remove("hidden");
+  };
+
+  const goHome = () => {
+    hideAllPanels();
+    landingPage.classList.remove("hidden");
+    const adminPanel = document.getElementById("adminPanel");
+    if (adminPanel) {
+      adminPanel.remove();
+    }
+  };
+
+  // --- Ensure scanner modal hidden ---
+  function ensureScannerHidden() {
+    if (!qrScannerModal.classList.contains("hidden")) {
+      closeScannerModal();
+    }
+  }
+
+  // --- Login ---
+  const loginUser = () => {
+    const mobile = document.getElementById("userLoginId").value;
+    const pin = document.getElementById("userLoginPin").value;
+    const user = accounts.find((acc) => acc.mobile === mobile && acc.pin === pin);
+
+    if (user) {
+      currentUser = { type: "customer", data: user };
+      document.getElementById("customerNameDisplay").textContent = user.name;
+      hideAllPanels();
+      customerPanel.classList.remove("hidden");
+      showCustomerView("operations"); // Default view
+      viewBalance();
+      populateProfile();
+      toggleOperation("deposit"); // show deposit form by default
+      activateCustomerNavButton("btnOperations");
+    } else {
+      alert("Invalid mobile number or PIN.");
+    }
+  };
+
+  const loginAdmin = () => {
+    const id = document.getElementById("adminLoginId").value;
+    const password = document.getElementById("adminLoginPassword").value;
+
+    if (id === "admin" && password === "a123") {
+      currentUser = { type: "admin" };
+      hideAllPanels();
+      createAdminPanel();
+      showAdminPage("analyticsPage");
+      activateAdminNavButton("navAnalytics");
+    } else {
+      alert("Invalid admin credentials.");
+    }
+  };
+
+  const logout = () => {
+    currentUser = null;
+    document.getElementById("userLoginId").value = "";
+    document.getElementById("userLoginPin").value = "";
+    document.getElementById("adminLoginId").value = "";
+    document.getElementById("adminLoginPassword").value = "";
+    const adminPanel = document.getElementById("adminPanel");
+    if (adminPanel) {
+      adminPanel.remove();
+    }
+    // Destroy chart if it exists
+    if (activityChart) {
+      activityChart.destroy();
+      activityChart = null;
+    }
+    goHome();
+  };
+
+  // --- Admin Panel Creation ---
+  const createAdminPanel = () => {
+    const existingAdminPanel = document.getElementById("adminPanel");
+    if (existingAdminPanel) {
+      existingAdminPanel.remove();
+    }
+
+    const html = `
+      <div id="adminPanel" class="admin-panel">
+        <div class="admin-header">
+          <h2><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h2>
+          <button onclick="logout()" class="btn-logout">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+        <div class="admin-nav">
+          <button id="navCreate" onclick="showAdminPage('createAccountPage')">
+            <i class="fas fa-plus-circle"></i> Create Account
+          </button>
+          <button id="navAnalytics" onclick="showAdminPage('analyticsPage')">
+            <i class="fas fa-chart-bar"></i> Analytics
+          </button>
+          <button id="navTransactions" onclick="showAdminPage('transactionsPage')">
+            <i class="fas fa-file-alt"></i> Transactions Report
+          </button>
+          <button id="navSearch" onclick="showAdminPage('searchProfilesPage')">
+            <i class="fas fa-search"></i> Search Profiles
+          </button>
+          <button id="navUsers" onclick="showAdminPage('usersPage')">
+            <i class="fas fa-users"></i> Users
+          </button>
+        </div>
+        <div class="admin-content">
+          <div id="createAccountPage" class="admin-page">
+            <div class="section">
+              <div class="section-title">
+                <i class="fas fa-plus-circle"></i>
+                <h3>Create New Account</h3>
+              </div>
+              <div class="form-group">
+                <input type="text" id="custName" placeholder="Customer Name" />
+              </div>
+              <div class="form-group">
+                <input type="text" id="custMobile" placeholder="Mobile Number" />
+              </div>
+              <div class="form-group">
+                <input type="text" id="custAddress" placeholder="Address" />
+              </div>
+              <div class="form-group">
+                <label for="custDob">Date of Birth:</label>
+                <input type="date" id="custDob" />
+              </div>
+              <div class="form-group">
+                <input type="text" id="custAadhar" placeholder="Aadhar Card Number" />
+              </div>
+              <div class="form-group">
+                <input type="password" id="custPin" placeholder="Set 4-digit PIN" />
+              </div>
+              <button onclick="createAccount()">
+                <i class="fas fa-user-plus"></i> Create Account
+              </button>
+            </div>
+          </div>
+
+          <div id="analyticsPage" class="admin-page active">
+            <div class="section">
+              <div class="section-title">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Transaction Analytics</h3>
+              </div>
+              
+              <div class="analytics-section">
+                <div class="analytics-header">
+                  <h4><i class="fas fa-chart-line"></i> Transaction Activity Overview</h4>
+                  <div class="chart-period-selector">
+                    <button class="period-btn active" onclick="changePeriod('daily')">Daily</button>
+                    <button class="period-btn" onclick="changePeriod('weekly')">Weekly</button>
+                    <button class="period-btn" onclick="changePeriod('monthly')">Monthly</button>
+                    <button class="period-btn" onclick="changePeriod('yearly')">Yearly</button>
+                  </div>
+                </div>
+                
+                <div class="chart-container">
+                  <div class="chart-wrapper">
+                    <canvas id="activityChart"></canvas>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="stats-container">
+                <div class="stats-card">
+                  <div class="stats-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                  </div>
+                  <div class="stats-info">
+                    <h4 id="totalTransactions">0</h4>
+                    <p>Total Transactions</p>
+                  </div>
+                </div>
+                
+                <div class="stats-card">
+                  <div class="stats-icon">
+                    <i class="fas fa-arrow-up"></i>
+                  </div>
+                  <div class="stats-info">
+                    <h4 id="totalDeposits">₹0.00</h4>
+                    <p>Total Deposits</p>
+                  </div>
+                </div>
+                
+                <div class="stats-card">
+                  <div class="stats-icon">
+                    <i class="fas fa-arrow-down"></i>
+                  </div>
+                  <div class="stats-info">
+                    <h4 id="totalWithdrawals">₹0.00</h4>
+                    <p>Total Withdrawals</p>
+                  </div>
+                </div>
+
+                <div class="stats-card">
+                  <div class="stats-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                  </div>
+                  <div class="stats-info">
+                    <h4 id="totalTransfers">₹0.00</h4>
+                    <p>Total Transfers</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="transactionsPage" class="admin-page">
+            <div class="section">
+              <div class="section-title">
+                <i class="fas fa-file-alt"></i>
+                <h3>View Transactions Report</h3>
+              </div>
+              <div class="form-group">
+                <input
+                  type="text"
+                  id="reportAccNum"
+                  placeholder="Account Number (Optional)"
+                />
+              </div>
+              <div class="form-group">
+                <label for="startDate">From Date:</label>
+                <input type="date" id="startDate" />
+              </div>
+              <div class="form-group">
+                <label for="endDate">To Date:</label>
+                <input type="date" id="endDate" />
+              </div>
+              <button onclick="viewTransactions()">
+                <i class="fas fa-chart-bar"></i> Generate Report
+              </button>
+              <div id="transactionHistoryDisplay"></div>
+            </div>
+          </div>
+
+          <div id="searchProfilesPage" class="admin-page">
+            <div class="section">
+              <div class="section-title">
+                <i class="fas fa-search"></i>
+                <h3>Search Profiles</h3>
+              </div>
+              <div class="form-group">
+                <input type="text" id="searchAccNum" placeholder="Enter Account Number" />
+              </div>
+              <button onclick="searchProfile()">
+                <i class="fas fa-search"></i> Search
+              </button>
+              <div id="searchProfileDisplay" class="search-profile-display"></div>
+            </div>
+          </div>
+
+          <div id="usersPage" class="admin-page">
+            <div class="section">
+              <div class="section-title">
+                <i class="fas fa-users"></i>
+                <h3>Users Management</h3>
+              </div>
+              
+              <!-- Statistics Cards -->
+              <div class="stats-container">
+                <div class="stats-card">
+                  <div class="stats-icon">
+                    <i class="fas fa-users"></i>
+                  </div>
+                  <div class="stats-info">
+                    <h4 id="totalCustomers">0</h4>
+                    <p>Total Customers</p>
+                  </div>
+                </div>
+                
+                <div class="stats-card">
+                  <div class="stats-icon">
+                    <i class="fas fa-money-bill-wave"></i>
+                  </div>
+                  <div class="stats-info">
+                    <h4 id="totalBankBalance">₹0.00</h4>
+                    <p>Total Bank Balance</p>
+                  </div>
+                </div>
+                
+                <div class="stats-card">
+                  <div class="stats-icon">
+                    <i class="fas fa-wallet"></i>
+                  </div>
+                  <div class="stats-info">
+                    <h4 id="totalWalletBalance">₹0.00</h4>
+                    <p>Total Wallet Balance</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Users Table -->
+              <div class="users-table-container">
+                <h4><i class="fas fa-list"></i> All Customers</h4>
+                <div id="usersTableDisplay"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Actually insert the HTML into the DOM
+    document.body.insertAdjacentHTML('beforeend', html);
+  };
+
+  // --- Analytics Functions ---
+  const updateAnalyticsStats = () => {
+    const totalTransactions = transactions.length;
+    const totalDeposits = transactions.filter(t => t.type === 'deposit').reduce((sum, t) => sum + t.amount, 0);
+    const totalWithdrawals = transactions.filter(t => t.type === 'withdrawal-to-wallet').reduce((sum, t) => sum + t.amount, 0);
+    const totalTransfers = transactions.filter(t => t.type === 'transfer').reduce((sum, t) => sum + t.amount, 0);
+
+    document.getElementById("totalTransactions").textContent = totalTransactions;
+    document.getElementById("totalDeposits").textContent = `₹${totalDeposits.toFixed(2)}`;
+    document.getElementById("totalWithdrawals").textContent = `₹${totalWithdrawals.toFixed(2)}`;
+    document.getElementById("totalTransfers").textContent = `₹${totalTransfers.toFixed(2)}`;
+  };
+
+  const changePeriod = (period) => {
+    currentPeriod = period;
+    
+    // Update button states
+    document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Update chart
+    updateChart();
+  };
+
+  const getChartData = (period) => {
+    const now = new Date();
+    let labels = [];
+    let data = [];
+    
+    if (period === 'daily') {
+      // Last 7 days
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date(now);
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().split('T')[0];
+        labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+        
+        const dayTransactions = transactions.filter(t => t.date === dateStr);
+        data.push(dayTransactions.length);
+      }
+    } else if (period === 'weekly') {
+      // Last 8 weeks
+      for (let i = 7; i >= 0; i--) {
+        const weekStart = new Date(now);
+        weekStart.setDate(weekStart.getDate() - (weekStart.getDay() + 7 * i));
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+        
+        labels.push(`Week ${8-i}`);
+        
+        const weekTransactions = transactions.filter(t => {
+          const tDate = new Date(t.date);
+          return tDate >= weekStart && tDate <= weekEnd;
+        });
+        data.push(weekTransactions.length);
+      }
+    } else if (period === 'monthly') {
+      // Last 12 months
+      for (let i = 11; i >= 0; i--) {
+        const month = new Date(now);
+        month.setMonth(month.getMonth() - i);
+        labels.push(month.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }));
+        
+        const monthTransactions = transactions.filter(t => {
+          const tDate = new Date(t.date);
+          return tDate.getMonth() === month.getMonth() && tDate.getFullYear() === month.getFullYear();
+        });
+        data.push(monthTransactions.length);
+      }
+    } else if (period === 'yearly') {
+      // Last 5 years
+      for (let i = 4; i >= 0; i--) {
+        const year = now.getFullYear() - i;
+        labels.push(year.toString());
+        
+        const yearTransactions = transactions.filter(t => {
+          const tDate = new Date(t.date);
+          return tDate.getFullYear() === year;
+        });
+        data.push(yearTransactions.length);
+      }
+    }
+    
+    return { labels, data };
+  };
+
+  const updateChart = () => {
+    const ctx = document.getElementById('activityChart');
+    if (!ctx) return;
+    
+    const { labels, data } = getChartData(currentPeriod);
+    
+    if (activityChart) {
+      activityChart.destroy();
+    }
+    
+    activityChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Number of Transactions',
+          data: data,
+          backgroundColor: 'rgba(0, 83, 186, 0.8)',
+          borderColor: 'rgba(0, 83, 186, 1)',
+          borderWidth: 1,
+          borderRadius: 4,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          title: {
+            display: true,
+            text: `Transaction Activity - ${currentPeriod.charAt(0).toUpperCase() + currentPeriod.slice(1)} View`,
+            font: {
+              size: 16,
+              weight: 'bold'
+            },
+            color: '#0053ba'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              color: '#6c757d'
+            },
+            grid: {
+              color: 'rgba(0, 0, 0, 0.1)'
+            }
+          },
+          x: {
+            ticks: {
+              color: '#6c757d'
+            },
+            grid: {
+              display: false
+            }
+          }
+        },
+        animation: {
+          duration: 1000,
+          easing: 'easeInOutQuart'
+        }
+      }
+    });
+  };
+
+  // --- Users Management Functions ---
+  const viewUsers = () => {
+    updateUserStats();
+    displayUsersTable();
+  };
+
+  const updateUserStats = () => {
+    const totalCustomers = accounts.length;
+    const totalBankBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
+    const totalWalletBalance = accounts.reduce((sum, acc) => sum + (acc.walletBalance || 0), 0);
+
+    document.getElementById("totalCustomers").textContent = totalCustomers;
+    document.getElementById("totalBankBalance").textContent = `₹${totalBankBalance.toFixed(2)}`;
+    document.getElementById("totalWalletBalance").textContent = `₹${totalWalletBalance.toFixed(2)}`;
+  };
+
+  const displayUsersTable = () => {
+    const displayDiv = document.getElementById("usersTableDisplay");
+    
+    if (accounts.length === 0) {
+      displayDiv.innerHTML = "<p>No customers found.</p>";
+      return;
+    }
+
+    let tableHtml = `
+      <table>
+        <tr>
+          <th>S.No</th>
+          <th>Name</th>
+          <th>Account Number</th>
+          <th>Mobile</th>
+          <th>Address</th>
+          <th>Account Balance</th>
+          <th>Wallet Balance</th>
+          <th>Date of Birth</th>
+        </tr>
+    `;
+
+    accounts.forEach((account, index) => {
+      tableHtml += `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${account.name}</td>
+          <td>${account.accountNumber}</td>
+          <td>${account.mobile}</td>
+          <td>${account.address}</td>
+          <td>₹${account.balance.toFixed(2)}</td>
+          <td>₹${(account.walletBalance || 0).toFixed(2)}</td>
+          <td>${account.dob}</td>
+        </tr>
+      `;
+    });
+
+    tableHtml += "</table>";
+    displayDiv.innerHTML = tableHtml;
+  };
+
+  // --- Admin Page Navigation ---
+  function showAdminPage(pageId) {
+    // Hide all admin pages first
+    const allPages = document.querySelectorAll(".admin-page");
+    allPages.forEach(page => {
+      page.classList.remove("active");
+    });
+
+    // Show the selected page
+    const targetPage = document.getElementById(pageId);
+    if (targetPage) {
+      targetPage.classList.add("active");
+    }
+
+    // Update nav button states
+    const allNavButtons = document.querySelectorAll(".admin-nav button");
+    allNavButtons.forEach(btn => btn.classList.remove("active"));
+
+    // Map page IDs to nav button IDs
+    const navButtonMap = {
+      createAccountPage: "navCreate",
+      analyticsPage: "navAnalytics",
+      transactionsPage: "navTransactions", 
+      searchProfilesPage: "navSearch",
+      usersPage: "navUsers"
+    };
+
+    const activeNavId = navButtonMap[pageId];
+    if (activeNavId) {
+      const activeNavBtn = document.getElementById(activeNavId);
+      if (activeNavBtn) {
+        activeNavBtn.classList.add("active");
+      }
+    }
+
+    // Load specific data when pages are shown
+    if (pageId === "usersPage") {
+      viewUsers();
+    } else if (pageId === "analyticsPage") {
+      setTimeout(() => {
+        updateAnalyticsStats();
+        updateChart();
+      }, 100);
+    }
+  }
+
+  function activateAdminNavButton(buttonId) {
+    const buttons = document.querySelectorAll(".admin-nav button");
+    buttons.forEach((b) => b.classList.remove("active"));
+    const btn = document.getElementById(buttonId);
+    if (btn) btn.classList.add("active");
+  }
+
+  // --- Admin functions ---
+  const createAccount = () => {
+    const name = document.getElementById("custName").value.trim();
+    const mobile = document.getElementById("custMobile").value.trim();
+    const address = document.getElementById("custAddress").value.trim();
+    const dob = document.getElementById("custDob").value;
+    const aadhar = document.getElementById("custAadhar").value.trim();
+    const pin = document.getElementById("custPin").value.trim();
+
+    if (!name || !mobile || !address || !dob || !aadhar || !pin) {
+      alert("Please fill all fields.");
+      return;
+    }
+    if (pin.length !== 4 || isNaN(pin)) {
+      alert("PIN must be a 4-digit number.");
+      return;
+    }
+    if (accounts.some((acc) => acc.mobile === mobile)) {
+      alert("Account with this mobile number already exists.");
+      return;
+    }
+    const accountNumber = generateAccountNumber();
+    const newAccount = {
+      name,
+      mobile,
+      address,
+      dob,
+      aadhar,
+      accountNumber,
+      pin,
+      balance: 0,
+      walletBalance: 0,
+    };
+    accounts.push(newAccount);
+    saveData();
+    alert(
+      `Account created successfully!\nAccount Number: ${accountNumber}\nPIN: ${pin}`
+    );
+
+    // Clear inputs
+    [
+      "custName",
+      "custMobile",
+      "custAddress",
+      "custDob",
+      "custAadhar",
+      "custPin",
+    ].forEach((id) => (document.getElementById(id).value = ""));
+
+    // Update users stats if on users page
+    const usersPage = document.getElementById("usersPage");
+    if (usersPage && usersPage.classList.contains("active")) {
+      updateUserStats();
+      displayUsersTable();
+    }
+  };
+
+  const viewTransactions = () => {
+    const accNum = document.getElementById("reportAccNum").value.trim();
+    const startDateValue = document.getElementById("startDate").value;
+    const endDateValue = document.getElementById("endDate").value;
+    const displayDiv = document.getElementById("transactionHistoryDisplay");
+
+    let filteredTransactions = transactions;
+
+    if (accNum) {
+      filteredTransactions = filteredTransactions.filter(
+        (tx) => tx.fromAccount === accNum || tx.toAccount === accNum
+      );
+    }
+
+    if (startDateValue && endDateValue) {
+      const startDate = new Date(startDateValue);
+      const endDate = new Date(endDateValue);
+      filteredTransactions = filteredTransactions.filter((tx) => {
+        const txDate = new Date(tx.date);
+        return txDate >= startDate && txDate <= endDate;
+      });
+    } else if (startDateValue || endDateValue) {
+      alert("Please select both a start and end date for filtering.");
+      return;
+    }
+
+    displayTransactions(filteredTransactions, displayDiv);
+  };
+
+  const searchProfile = () => {
+    const accNum = document.getElementById("searchAccNum").value.trim();
+    const displayDiv = document.getElementById("searchProfileDisplay");
+    const account = accounts.find((acc) => acc.accountNumber === accNum);
+
+    if (!accNum) {
+      alert("Please enter an account number.");
+      return;
+    }
+    if (!account) {
+      displayDiv.innerHTML = "<p>No profile found with this account number.</p>";
+      return;
+    }
+    displayDiv.innerHTML = `
+      <div class="profile-info">
+        <h4>Profile Details for Account ${account.accountNumber}</h4>
+        <p><strong>Name:</strong> ${account.name}</p>
+        <p><strong>Mobile Number:</strong> ${account.mobile}</p>
+        <p><strong>Address:</strong> ${account.address}</p>
+        <p><strong>Date of Birth:</strong> ${account.dob}</p>
+        <p><strong>Aadhar Number:</strong> ${account.aadhar}</p>
+        <p><strong>Current Balance:</strong> ₹${account.balance.toFixed(2)}</p>
+        <p><strong>Wallet Balance:</strong> ₹${(account.walletBalance || 0).toFixed(
+          2
+        )}</p>
+      </div>
+    `;
+  };
+
+  // --- Customer functions ---
+  const showCustomerView = (viewName) => {
+    ["operationsView", "profileView", "historyView"].forEach((id) =>
+      document.getElementById(id).classList.add("hidden")
+    );
+    document.getElementById(`${viewName}View`).classList.remove("hidden");
+    activateCustomerNavButton("btn" + capitalizeFirstLetter(viewName));
+    
+    if (viewName === "history") {
+      viewCustomerTransactions();
+    } else if (viewName === "profile") {
+      // Refresh profile data when viewing profile
+      const customer = accounts.find(
+        (acc) => acc.accountNumber === currentUser.data.accountNumber
+      );
+      if (customer) {
+        currentUser.data = customer; // Update with latest data
+        populateProfile();
+      }
+    }
+  };
+
+  function activateCustomerNavButton(buttonId) {
+    ["btnOperations", "btnProfile", "btnHistory"].forEach((id) =>
+      document.getElementById(id).classList.remove("active")
+    );
+    const btn = document.getElementById(buttonId);
+    if (btn) btn.classList.add("active");
+  }
+
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
+  const populateProfile = () => {
+    const user = currentUser.data;
+    document.getElementById("profileName").textContent = user.name;
+    document.getElementById("profileAccNum").textContent = user.accountNumber;
+    document.getElementById("profileMobile").textContent = user.mobile;
+    document.getElementById("profileAddress").textContent = user.address;
+    document.getElementById("profileDob").textContent = user.dob;
+    document.getElementById("profileAadhar").textContent = user.aadhar;
+    document.getElementById("profileBalance").textContent = `₹${user.balance.toFixed(2)}`;
+    document.getElementById("profileWalletBalance").textContent = `₹${(user.walletBalance || 0).toFixed(2)}`;
+  };
+
+  const toggleOperation = (op) => {
+    ["depositForm", "withdrawForm", "transferForm"].forEach((id) =>
+      document.getElementById(id).classList.add("hidden")
+    );
+    document.getElementById(op + "Form").classList.remove("hidden");
+
+    // Highlight operation buttons
+    ["btnDeposit", "btnWithdraw", "btnTransfer"].forEach((bid) =>
+      document.getElementById(bid).classList.remove("active")
+    );
+    if (op === "deposit") document.getElementById("btnDeposit").classList.add("active");
+    else if (op === "withdraw") document.getElementById("btnWithdraw").classList.add("active");
+    else if (op === "transfer") document.getElementById("btnTransfer").classList.add("active");
+  };
+
+  const viewWalletBalance = () => {
+    const customer = accounts.find(
+      (acc) => acc.accountNumber === currentUser.data.accountNumber
+    );
+    if (!customer.walletBalance) customer.walletBalance = 0;
+    walletBalanceDisplay.textContent = `Wallet Balance: ₹${customer.walletBalance.toFixed(
+      2
+    )}`;
+  };
+
+  const showWalletBalance = () => {
+    const customer = accounts.find(
+      (acc) => acc.accountNumber === currentUser?.data?.accountNumber
+    );
+    if (!customer) {
+      alert("Please login to view wallet balance.");
+      return;
+    }
+    if (!customer.walletBalance) customer.walletBalance = 0;
+    alert(`Wallet Balance: ₹${customer.walletBalance.toFixed(2)}`);
+  };
+
+  const viewBalance = () => {
+    const customer = accounts.find(
+      (acc) => acc.accountNumber === currentUser.data.accountNumber
+    );
+    currentUser.data = customer;
+    balanceDisplay.textContent = `Account Balance: ₹${customer.balance.toFixed(2)}`;
+    viewWalletBalance();
+  };
+
+  const recordTransaction = (type, amount, toAccNum = null, fromAccNum = null) => {
+    transactions.push({
+      date: new Date().toISOString().split("T")[0],
+      type,
+      amount,
+      fromAccount: fromAccNum,
+      toAccount: toAccNum,
+    });
+    saveData();
+  };
+
+  // Customer Transactions
+  const depositMoney = () => {
+    const pin = document.getElementById("depositPin").value;
+    const amount = parseFloat(document.getElementById("depositAmount").value);
+    const customer = accounts.find(
+      (acc) => acc.accountNumber === currentUser.data.accountNumber
+    );
+    if (pin !== customer.pin) {
+      alert("Invalid PIN.");
+      return;
+    }
+    if (isNaN(amount) || amount <= 0) {
+      alert("Invalid amount.");
+      return;
+    }
+    customer.balance += amount;
+    currentUser.data = customer; // Update current user data
+    recordTransaction("deposit", amount, customer.accountNumber);
+    saveData();
+    alert(`₹${amount} deposited successfully.`);
+    viewBalance();
+    
+    // Update analytics if analytics page is active
+    const analyticsPage = document.getElementById("analyticsPage");
+    if (analyticsPage && analyticsPage.classList.contains("active")) {
+      updateAnalyticsStats();
+      updateChart();
+    }
+    
+    // Update users page if it's currently active
+    const usersPage = document.getElementById("usersPage");
+    if (usersPage && usersPage.classList.contains("active")) {
+      updateUserStats();
+      displayUsersTable();
+    }
+    
+    document.getElementById("depositPin").value = "";
+    document.getElementById("depositAmount").value = "";
+  };
+
+  const withdrawMoney = () => {
+    const pin = document.getElementById("withdrawPin").value;
+    const amount = parseFloat(document.getElementById("withdrawAmount").value);
+    const customer = accounts.find(
+      (acc) => acc.accountNumber === currentUser.data.accountNumber
+    );
+    if (pin !== customer.pin) {
+      alert("Invalid PIN.");
+      return;
+    }
+    if (isNaN(amount) || amount <= 0 || amount > customer.balance) {
+      alert("Invalid amount or insufficient balance.");
+      return;
+    }
+    customer.balance -= amount;
+    if (!customer.walletBalance) customer.walletBalance = 0;
+    customer.walletBalance += amount;
+    currentUser.data = customer; // Update current user data
+    recordTransaction("withdrawal-to-wallet", amount, null, customer.accountNumber);
+    saveData();
+    alert(`₹${amount} moved to Wallet successfully.`);
+    viewBalance();
+    
+    // Update analytics if analytics page is active
+    const analyticsPage = document.getElementById("analyticsPage");
+    if (analyticsPage && analyticsPage.classList.contains("active")) {
+      updateAnalyticsStats();
+      updateChart();
+    }
+    
+    // Update users page if it's currently active
+    const usersPage = document.getElementById("usersPage");
+    if (usersPage && usersPage.classList.contains("active")) {
+      updateUserStats();
+      displayUsersTable();
+    }
+    
+    document.getElementById("withdrawPin").value = "";
+    document.getElementById("withdrawAmount").value = "";
+  };
+
+  const transferMoney = () => {
+    const pin = document.getElementById("transferPin").value;
+    const toAccNum = document.getElementById("transferAccNum").value.trim();
+    const amount = parseFloat(document.getElementById("transferAmount").value);
+    const fromAcc = accounts.find(
+      (acc) => acc.accountNumber === currentUser.data.accountNumber
+    );
+    if (pin !== fromAcc.pin) {
+      alert("Invalid PIN.");
+      return;
+    }
+    if (fromAcc.accountNumber === toAccNum) {
+      alert("You cannot transfer money to your own account.");
+      return;
+    }
+    const toAcc = accounts.find((acc) => acc.accountNumber === toAccNum);
+    if (!toAcc) {
+      alert("Destination account not found.");
+      return;
+    }
+    if (isNaN(amount) || amount <= 0 || amount > fromAcc.balance) {
+      alert("Invalid amount or insufficient balance.");
+      return;
+    }
+    fromAcc.balance -= amount;
+    toAcc.balance += amount;
+    currentUser.data = fromAcc; // Update current user data
+    recordTransaction("transfer", amount, toAccNum, fromAcc.accountNumber);
+    saveData();
+    alert(`₹${amount} transferred successfully to account ${toAccNum}.`);
+    viewBalance();
+    
+    // Update analytics if analytics page is active
+    const analyticsPage = document.getElementById("analyticsPage");
+    if (analyticsPage && analyticsPage.classList.contains("active")) {
+      updateAnalyticsStats();
+      updateChart();
+    }
+    
+    // Update users page if it's currently active
+    const usersPage = document.getElementById("usersPage");
+    if (usersPage && usersPage.classList.contains("active")) {
+      updateUserStats();
+      displayUsersTable();
+    }
+    
+    document.getElementById("transferPin").value = "";
+    document.getElementById("transferAccNum").value = "";
+    document.getElementById("transferAmount").value = "";
+  };
+
+  const viewCustomerTransactions = () => {
+    const userTransactions = transactions.filter(
+      (tx) =>
+        tx.fromAccount === currentUser.data.accountNumber ||
+        tx.toAccount === currentUser.data.accountNumber
+    );
+    displayTransactions(userTransactions, document.getElementById("customerTransactionHistoryDisplay"));
+  };
+
+  const displayTransactions = (txList, element) => {
+    if (!txList.length) {
+      element.innerHTML = "<p>No transactions found.</p>";
+      return;
+    }
+    let tableHtml = "<table><tr><th>Date</th><th>Type</th><th>Amount</th><th>Details</th></tr>";
+    txList.forEach((tx) => {
+      let details = "";
+      if (tx.type === "transfer")
+        details = `From: ${tx.fromAccount} To: ${tx.toAccount}`;
+      else if (tx.type === "deposit") details = `To: ${tx.toAccount}`;
+      else if (tx.type === "withdrawal-to-wallet")
+        details = `From: ${tx.fromAccount} to Wallet`;
+      else if (tx.type === "wallet-payment")
+        details = `Wallet payment to: ${tx.toAccount}`;
+      tableHtml += `<tr><td>${tx.date}</td><td>${tx.type}</td><td>₹${tx.amount.toFixed(
+        2
+      )}</td><td>${details}</td></tr>`;
+    });
+    tableHtml += "</table>";
+    element.innerHTML = tableHtml;
+  };
+
+  // --- Scan & Pay Implementation ---
+  function openScanner() {
+    qrScannerModal.classList.remove("hidden");
+    qrScannerModal.setAttribute("aria-hidden", "false");
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices
+        .getUserMedia({ video: { facingMode: "environment" } })
+        .then(function (stream) {
+          cameraStream = stream;
+          qrVideo.srcObject = stream;
+          qrVideo.play();
+
+          // Simulated scan and payment after 4 sec:
+          setTimeout(() => {
+            payWithWallet(50, "Merchant QR123");
+            closeScannerModal();
+          }, 4000);
+        })
+        .catch(function () {
+          alert("Unable to access camera.");
+          closeScannerModal();
+        });
+    } else {
+      alert("Camera not supported on this device.");
+      closeScannerModal();
+    }
+  }
+
+  function closeScannerModal() {
+    qrScannerModal.classList.add("hidden");
+    qrScannerModal.setAttribute("aria-hidden", "true");
+    if (cameraStream) {
+      cameraStream.getTracks().forEach((track) => track.stop());
+      cameraStream = null;
+    }
+    qrVideo.pause();
+    qrVideo.srcObject = null;
+  }
+
+  function payWithWallet(amount, merchant) {
+    const customer = accounts.find(
+      (acc) => acc.accountNumber === currentUser.data.accountNumber
+    );
+    if (!customer.walletBalance) customer.walletBalance = 0;
+    if (customer.walletBalance < amount) {
+      alert("Insufficient wallet balance!");
+      return;
+    }
+    customer.walletBalance -= amount;
+    recordTransaction("wallet-payment", amount, merchant, customer.accountNumber);
+    saveData();
+    alert(`Paid ₹${amount} to ${merchant} via Wallet.`);
+    viewWalletBalance();
+    
+    // Update analytics if analytics page is active
+    const analyticsPage = document.getElementById("analyticsPage");
+    if (analyticsPage && analyticsPage.classList.contains("active")) {
+      updateAnalyticsStats();
+      updateChart();
+    }
+  }
+</script>
+</body>
+</html>
