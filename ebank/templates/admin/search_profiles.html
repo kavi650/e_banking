@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Search Profiles</h1>
+<form method="post" class="form">
+  <label>Enter Account Number</label>
+  <input type="text" name="account_number" required />
+  <button type="submit" class="btn primary">Search</button>
+  {% if result %}
+    <div class="card mt">
+      <div><strong>Name:</strong> {{ result.customer.name }}</div>
+      <div><strong>Account Number:</strong> {{ result.account_number }}</div>
+      <div><strong>Mobile:</strong> {{ result.customer.phone_number }}</div>
+      <div><strong>Address:</strong> {{ result.customer.address }}</div>
+      <div><strong>Date of Birth:</strong> {{ result.customer.date_of_birth }}</div>
+      <div><strong>Aadhar:</strong> {{ result.customer.aadhar_number }}</div>
+      <div><strong>Account Balance:</strong> ₹ {{ '%.2f'|format(result.main_balance) }}</div>
+      <div><strong>Wallet Balance:</strong> ₹ {{ '%.2f'|format(result.wallet_balance) }}</div>
+    </div>
+  {% endif %}
+</form>
+{% endblock %}
+

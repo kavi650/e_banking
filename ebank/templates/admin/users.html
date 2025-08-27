@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Users Management</h1>
+<div class="stats">
+  <div class="stat"><div class="label">Total Customers</div><div class="value">{{ total_customers }}</div></div>
+  <div class="stat"><div class="label">Total Bank Balance</div><div class="value">₹ {{ '%.2f'|format(total_bank_balance) }}</div></div>
+  <div class="stat"><div class="label">Total Wallet Balance</div><div class="value">₹ {{ '%.2f'|format(total_wallet_balance) }}</div></div>
+  </div>
+<table class="table">
+  <thead>
+    <tr>
+      <th>S.No</th><th>Name</th><th>Account Number</th><th>Mobile</th><th>Address</th><th>Account Balance</th><th>Wallet Balance</th><th>Date of Birth</th><th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for c, a in customers %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td>{{ c.name }}</td>
+      <td>{{ a.account_number }}</td>
+      <td>{{ c.phone_number }}</td>
+      <td>{{ c.address }}</td>
+      <td>₹ {{ '%.2f'|format(a.main_balance) }}</td>
+      <td>₹ {{ '%.2f'|format(a.wallet_balance) }}</td>
+      <td>{{ c.date_of_birth }}</td>
+      <td>
+        <details>
+          <summary>Edit</summary>
+          <form method="post" class="form inline">
+            <input type="hidden" name="action" value="edit" />
+            <input type="hidden" name="account_id" value="{{ a.id }}" />
+            <input type="text" name="name" value="{{ c.name }}" />
+            <input type="text" name="phone" value="{{ c.phone_number }}" />
+            <input type="text" name="address" value="{{ c.address }}" />
+            <input type="date" name="dob" value="{{ c.date_of_birth }}" />
+            <button class="btn primary" type="submit">Save</button>
+          </form>
+        </details>
+        <form method="post" onsubmit="return confirm('Delete this account?')" class="inline">
+          <input type="hidden" name="action" value="delete" />
+          <input type="hidden" name="account_id" value="{{ a.id }}" />
+          <button class="btn danger" type="submit">Delete</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+
