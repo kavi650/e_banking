@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="grid cols-3">
+	<div class="card">
+		<h3 class="section-title">Main Account Balance</h3>
+		<p style="font-size:28px;font-weight:700">₹{{ '%.2f' % user.account_balance }}</p>
+	</div>
+	<div class="card">
+		<h3 class="section-title">Wallet Balance</h3>
+		<p style="font-size:28px;font-weight:700">₹{{ '%.2f' % user.wallet_balance }}</p>
+	</div>
+	<div class="card">
+		<h3 class="section-title">Alerts</h3>
+		{% if fraud_flags or login_flags %}
+			<ul>
+				{% for f in fraud_flags %}<li>{{ f.reason }}{% if f.amount %}: ₹{{ '%.2f' % f.amount }}{% endif %}</li>{% endfor %}
+				{% for f in login_flags %}<li>{{ f.reason }} ({{ f.count }})</li>{% endfor %}
+			</ul>
+		{% else %}
+			<p>No alerts</p>
+		{% endif %}
+	</div>
+</div>
+<hr class="sep">
+<div class="grid cols-3">
+	<div class="card">
+		<h3 class="section-title">Operations</h3>
+		<form class="form" method="post" action="{{ url_for('main.customer_deposit') }}">
+			<label class="label" for="dep_amt">Deposit Amount</label>
+			<input class="input" id="dep_amt" name="amount" type="number" step="0.01" min="0">
+			<button class="btn btn-primary" type="submit">Deposit</button>
+		</form>
+		<hr class="sep">
+		<form class="form" method="post" action="{{ url_for('main.customer_withdraw_wallet') }}">
+			<label class="label" for="wd_amt">Withdraw to Wallet</label>
+			<input class="input" id="wd_amt" name="amount" type="number" step="0.01" min="0">
+			<button class="btn btn-primary" type="submit">Withdraw</button>
+		</form>
+		<hr class="sep">
+		<form class="form" method="post" action="{{ url_for('main.customer_transfer') }}">
+			<label class="label" for="to_account">Transfer To Account</label>
+			<input class="input" id="to_account" name="to_account">
+			<label class="label" for="tf_amount">Amount</label>
+			<input class="input" id="tf_amount" name="amount" type="number" step="0.01" min="0">
+			<button class="btn btn-primary" type="submit">Transfer</button>
+		</form>
+	</div>
+	<div class="card">
+		<h3 class="section-title">Your Profile</h3>
+		<p><strong>Name:</strong> {{ user.name }}</p>
+		<p><strong>Account Number:</strong> {{ user.account_number }}</p>
+		<p><strong>Mobile Number:</strong> {{ user.mobile }}</p>
+		<p><strong>Address:</strong> {{ user.address }}</p>
+		<p><strong>Date of Birth:</strong> {{ user.date_of_birth }}</p>
+		<p><strong>Aadhar Number:</strong> {{ user.aadhar_number }}</p>
+		<p><strong>Account Balance:</strong> ₹{{ '%.2f' % user.account_balance }}</p>
+		<p><strong>Wallet Balance:</strong> ₹{{ '%.2f' % user.wallet_balance }}</p>
+	</div>
+	<div class="card">
+		<h3 class="section-title">Chatbot</h3>
+		<form id="chatbotForm" class="form">
+			<textarea id="chatLog" rows="8" class="input" readonly placeholder="Chat log..."></textarea>
+			<input id="chatInput" class="input" placeholder="Ask about balance, profile, history...">
+			<button class="btn btn-primary" type="submit">Send</button>
+		</form>
+		<a class="btn btn-outline" style="margin-top:10px" href="{{ url_for('main.customer_history') }}">View History</a>
+	</div>
+</div>
+{% endblock %}
+{% block footer_extra %}
+<div class="footer-actions">
+	<a class="footer-btn" href="{{ url_for('main.customer_profile') }}"><span class="icon">👤</span><span>Profile</span></a>
+	<div class="center"><a class="footer-btn" href="#"><span class="icon">🧾</span><span>Scan & Pay</span></a></div>
+	<a class="footer-btn" href="{{ url_for('main.customer_dashboard') }}"><span class="icon">💼</span><span>Wallet ₹{{ '%.2f' % user.wallet_balance }}</span></a>
+</div>
+{% endblock %}

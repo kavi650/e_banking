@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="grid cols-2">
+	<div class="card">
+		<h3 class="section-title">Create Account</h3>
+		<form class="form" method="post" action="{{ url_for('main.admin_create_account') }}">
+			<label class="label" for="name">Customer Name</label>
+			<input class="input" id="name" name="name" required>
+			<label class="label" for="mobile">Mobile Number</label>
+			<input class="input" id="mobile" name="mobile" required>
+			<label class="label" for="address">Address</label>
+			<input class="input" id="address" name="address" required>
+			<label class="label" for="dob">Date of Birth</label>
+			<input class="input" id="dob" name="dob" type="date" required>
+			<label class="label" for="aadhar">Aadhar Card Number</label>
+			<input class="input" id="aadhar" name="aadhar" required>
+			<label class="label" for="pin">Set 4-digit PIN</label>
+			<input class="input" id="pin" name="pin" type="password" minlength="4" maxlength="4" required>
+			<button class="btn btn-primary" type="submit">Create Account</button>
+		</form>
+	</div>
+	<div class="card">
+		<h3 class="section-title">Analytics</h3>
+		<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+			<label class="label" for="analyticsMode" style="margin:0">Mode</label>
+			<select id="analyticsMode" class="input" style="max-width:220px">
+				<option value="weekly">Weekly</option>
+				<option value="monthly">Monthly</option>
+				<option value="yearly">Yearly</option>
+			</select>
+		</div>
+		<canvas id="analyticsChart" height="160"></canvas>
+	</div>
+</div>
+<hr class="sep">
+<div class="grid cols-2">
+	<div class="card">
+		<h3 class="section-title">Transactions Report</h3>
+		<form class="form" method="get" action="{{ url_for('main.admin_transactions_report') }}">
+			<label class="label" for="account_number">Account Number (optional)</label>
+			<input class="input" id="account_number" name="account_number">
+			<div class="grid cols-2">
+				<div>
+					<label class="label" for="from_date">From Date</label>
+					<input class="input" id="from_date" type="date" name="from_date">
+				</div>
+				<div>
+					<label class="label" for="to_date">To Date</label>
+					<input class="input" id="to_date" type="date" name="to_date">
+				</div>
+			</div>
+			<button class="btn btn-primary" type="submit">Generate Report</button>
+		</form>
+	</div>
+	<div class="card">
+		<h3 class="section-title">Search Profiles</h3>
+		<form class="form" method="get" action="{{ url_for('main.admin_search_profile') }}">
+			<label class="label" for="search_ac">Enter Account Number</label>
+			<input class="input" id="search_ac" name="account_number" required>
+			<button class="btn btn-primary" type="submit">Search</button>
+		</form>
+	</div>
+</div>
+<hr class="sep">
+<div class="card">
+	<h3 class="section-title">Users Management</h3>
+	<div class="stats">
+		<div class="stat"><div>Total Customers</div><div class="value">{{ total_customers }}</div></div>
+		<div class="stat"><div>Total Bank Balance</div><div class="value">₹{{ '%.2f' % total_bank_balance }}</div></div>
+		<div class="stat"><div>Total Wallet Balance</div><div class="value">₹{{ '%.2f' % total_wallet_balance }}</div></div>
+	</div>
+	<table class="table" style="margin-top:12px">
+		<thead>
+			<tr>
+				<th>S.No</th>
+				<th>Name</th>
+				<th>Account Number</th>
+				<th>Mobile</th>
+				<th>Address</th>
+				<th>Account Balance</th>
+				<th>Wallet Balance</th>
+				<th>Date of Birth</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for c in customers %}
+			<tr>
+				<td>{{ loop.index }}</td>
+				<td>{{ c.name }}</td>
+				<td>{{ c.account_number }}</td>
+				<td>{{ c.mobile }}</td>
+				<td>{{ c.address }}</td>
+				<td>₹{{ '%.2f' % c.account_balance }}</td>
+				<td>₹{{ '%.2f' % c.wallet_balance }}</td>
+				<td>{{ c.date_of_birth }}</td>
+				<td>
+					<a class="btn btn-outline" href="{{ url_for('main.admin_edit_user', account_number=c.account_number) }}">Edit</a>
+					<form style="display:inline" method="post" action="{{ url_for('main.admin_delete_user', account_number=c.account_number) }}" onsubmit="return confirm('Delete this customer?')">
+						<button class="btn btn-outline" type="submit">Delete</button>
+					</form>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock %}
