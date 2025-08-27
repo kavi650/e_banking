@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+	<h3 class="section-title">Your Profile</h3>
+	<div class="grid cols-2">
+		<div>
+			<p><strong>Name:</strong> {{ user.name }}</p>
+			<p><strong>Account Number:</strong> {{ user.account_number }}</p>
+			<p><strong>Mobile Number:</strong> {{ user.mobile }}</p>
+			<p><strong>Address:</strong> {{ user.address }}</p>
+		</div>
+		<div>
+			<p><strong>Date of Birth:</strong> {{ user.date_of_birth }}</p>
+			<p><strong>Aadhar Number:</strong> {{ user.aadhar_number }}</p>
+			<p><strong>Account Balance:</strong> ₹{{ '%.2f' % user.account_balance }}</p>
+			<p><strong>Wallet Balance:</strong> ₹{{ '%.2f' % user.wallet_balance }}</p>
+		</div>
+	</div>
+</div>
+{% endblock %}

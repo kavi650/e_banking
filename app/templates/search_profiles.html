@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="grid cols-2">
+	<div class="card">
+		<h3 class="section-title">Search Profiles</h3>
+		<form class="form" method="get" action="{{ url_for('main.admin_search_profile') }}">
+			<label class="label" for="account_number">Enter Account Number</label>
+			<input class="input" id="account_number" name="account_number" required>
+			<button class="btn btn-primary" type="submit">Search</button>
+		</form>
+	</div>
+	<div class="card">
+		<h3 class="section-title">Result</h3>
+		{% if customer %}
+		<p><strong>Name:</strong> {{ customer.name }}</p>
+		<p><strong>Account Number:</strong> {{ customer.account_number }}</p>
+		<p><strong>Mobile:</strong> {{ customer.mobile }}</p>
+		<p><strong>Address:</strong> {{ customer.address }}</p>
+		<p><strong>Date of Birth:</strong> {{ customer.date_of_birth }}</p>
+		<p><strong>Aadhar Number:</strong> {{ customer.aadhar_number }}</p>
+		{% else %}
+		<p>No customer found. Try searching.</p>
+		{% endif %}
+	</div>
+</div>
+{% endblock %}

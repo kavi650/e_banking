@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+	<h3 class="section-title">Edit Customer</h3>
+	<form class="form" method="post">
+		<label class="label" for="name">Name</label>
+		<input class="input" id="name" name="name" value="{{ c.name }}" required>
+		<label class="label" for="mobile">Mobile</label>
+		<input class="input" id="mobile" name="mobile" value="{{ c.mobile }}" required>
+		<label class="label" for="address">Address</label>
+		<input class="input" id="address" name="address" value="{{ c.address }}" required>
+		<label class="label" for="dob">Date of Birth</label>
+		<input class="input" id="dob" name="dob" type="date" value="{{ c.date_of_birth }}" required>
+		<label class="label" for="aadhar">Aadhar</label>
+		<input class="input" id="aadhar" name="aadhar" value="{{ c.aadhar_number }}" required>
+		<button class="btn btn-primary" type="submit">Save</button>
+	</form>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="grid cols-2">
+	<div class="card">
+		<h2 class="section-title">Welcome to E-Bank</h2>
+		<p>Secure, simple, and fast banking. Please choose your portal below.</p>
+	</div>
+	<div class="grid cols-2">
+		<div class="card">
+			<h3 class="section-title">Admin Login</h3>
+			<form class="form" method="post" action="{{ url_for('main.login_admin') }}">
+				<label class="label" for="username">Username</label>
+				<input class="input" id="username" name="username" placeholder="admin" required>
+				<label class="label" for="password">Password</label>
+				<input class="input" id="password" type="password" name="password" placeholder="a123" required>
+				<button class="btn btn-primary" type="submit">Login</button>
+			</form>
+		</div>
+		<div class="card">
+			<h3 class="section-title">User Login</h3>
+			<form class="form" method="post" action="{{ url_for('main.login_user') }}">
+				<label class="label" for="mobile">Mobile Number</label>
+				<input class="input" id="mobile" name="mobile" placeholder="Phone number" required>
+				<label class="label" for="pin">4-digit PIN</label>
+				<input class="input" id="pin" name="pin" type="password" minlength="4" maxlength="4" placeholder="****" required>
+				<button class="btn btn-primary" type="submit">Login</button>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}
