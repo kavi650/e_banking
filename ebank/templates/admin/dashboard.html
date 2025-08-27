@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="admin-grid">
+  <aside class="sidebar">
+    <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Overview</a>
+    <a class="nav-link" href="{{ url_for('admin.create_account') }}">Create Account</a>
+    <a class="nav-link" href="#" onclick="showTab('analytics'); return false;">Analytics</a>
+    <a class="nav-link" href="{{ url_for('admin.transactions_report') }}">Transactions Report</a>
+    <a class="nav-link" href="{{ url_for('admin.search_profiles') }}">Search Profiles</a>
+    <a class="nav-link" href="{{ url_for('admin.users') }}">Users</a>
+  </aside>
+  <section class="content">
+    <h1>Admin Dashboard</h1>
+    <div class="stats">
+      <div class="stat"><div class="label">Total Customers</div><div class="value">{{ total_customers }}</div></div>
+      <div class="stat"><div class="label">Total Bank Balance</div><div class="value">₹ {{ '%.2f'|format(total_bank_balance) }}</div></div>
+      <div class="stat"><div class="label">Total Wallet Balance</div><div class="value">₹ {{ '%.2f'|format(total_wallet_balance) }}</div></div>
+    </div>
+    <div id="analytics" class="card">
+      <div class="toolbar">
+        <button class="btn" onclick="loadAnalytics('weekly')">Weekly</button>
+        <button class="btn" onclick="loadAnalytics('monthly')">Monthly</button>
+        <button class="btn" onclick="loadAnalytics('yearly')">Yearly</button>
+      </div>
+      <canvas id="chart"></canvas>
+    </div>
+  </section>
+</div>
+<script>
+let chart;
+function showTab(id){ document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
+async function loadAnalytics(mode){
+  const res = await fetch(`{{ url_for('admin.analytics_data') }}?mode=${mode}`);
+  const data = await res.json();
+  const ctx = document.getElementById('chart').getContext('2d');
+  if(chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: data.labels,
+      datasets: [
+        { label: 'Deposits', backgroundColor: THEME.primary, data: data.deposits, yAxisID: 'y' },
+        { label: 'Withdrawals', backgroundColor: THEME.primaryDark, data: data.withdrawals, yAxisID: 'y' },
+        { label: 'Transactions', type: 'line', borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.2)', data: data.transactions, yAxisID: 'y1' }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: 'Amount' } },
+        y1: { beginAtZero: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Count' } }
+      }
+    }
+  });
+}
+loadAnalytics('weekly');
+</script>
+{% endblock %}
+

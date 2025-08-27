@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Create Account</h1>
+<form method="post" class="form">
+  <label>Customer Name</label>
+  <input type="text" name="name" required />
+  <label>Mobile Number</label>
+  <input type="text" name="phone" required />
+  <label>Address</label>
+  <input type="text" name="address" required />
+  <label>Date of Birth</label>
+  <input type="date" name="dob" required />
+  <label>Aadhar Card Number</label>
+  <input type="text" name="aadhar" required />
+  <label>Set 4-digit PIN</label>
+  <input type="password" name="pin" pattern="\\d{4}" placeholder="****" required />
+  <button type="submit" class="btn primary">Create Account</button>
+</form>
+{% endblock %}
+

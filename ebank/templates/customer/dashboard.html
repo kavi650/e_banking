@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="customer-grid">
+  <section class="balances card">
+    <h2>Balances</h2>
+    <div class="balance-row">
+      <div>
+        <div class="label">Main Account</div>
+        <div class="value">₹ {{ '%.2f'|format(account.main_balance) }}</div>
+      </div>
+      <div>
+        <div class="label">Wallet Balance</div>
+        <div class="value">₹ {{ '%.2f'|format(account.wallet_balance) }}</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu card">
+    <h2>Main Menu</h2>
+    <div class="tabs">
+      <button class="btn" onclick="showTab('operations')">Operations</button>
+      <button class="btn" onclick="window.location='{{ url_for('customer.profile') }}'">Profile</button>
+      <button class="btn" onclick="window.location='{{ url_for('customer.history') }}'">History</button>
+      <button class="btn" onclick="toggleChat()">Chatbot</button>
+    </div>
+    <div id="operations" class="mt">
+      <form method="post" action="{{ url_for('customer.operation') }}" class="form grid-2">
+        <div>
+          <label>Operation</label>
+          <select name="type">
+            <option value="deposit">Deposit</option>
+            <option value="withdraw_to_wallet">Withdraw to Wallet</option>
+            <option value="transfer">Transfer</option>
+          </select>
+        </div>
+        <div>
+          <label>Amount</label>
+          <input type="number" name="amount" min="1" step="0.01" required />
+        </div>
+        <div class="full">
+          <label>Target Account (for transfer)</label>
+          <input type="text" name="target_account_number" placeholder="Account Number" />
+        </div>
+        <div class="full">
+          <label>Details</label>
+          <input type="text" name="details" />
+        </div>
+        <div class="full">
+          <button class="btn primary" type="submit">Submit</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="chatbot card" id="chat" style="display:none">
+    <h2>Chatbot</h2>
+    <div id="chat-log" class="chat-log"></div>
+    <form onsubmit="return sendMsg()" class="chat-form">
+      <input type="text" id="chat-input" placeholder="Ask about balance, profile, history" />
+      <button class="btn primary" type="submit">Send</button>
+    </form>
+  </section>
+</div>
+
+{% endblock %}
+{% block footer_center %}
+<div class="footer-actions">
+  <a class="btn" href="{{ url_for('customer.profile') }}">Profile</a>
+  <button class="btn primary big" onclick="alert('Scan and Pay placeholder')">Scan & Pay</button>
+  <div class="btn">Wallet: ₹ {{ '%.2f'|format(account.wallet_balance) }}</div>
+  </div>
+<script>
+function showTab(id){ document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
+function toggleChat(){
+  const el = document.getElementById('chat');
+  el.style.display = (el.style.display==='none'?'block':'none');
+}
+async function sendMsg(){
+  const input = document.getElementById('chat-input');
+  const log = document.getElementById('chat-log');
+  const msg = input.value.trim();
+  if(!msg) return false;
+  log.innerHTML += `<div class="msg user">${msg}</div>`;
+  input.value='';
+  const form = new FormData(); form.append('message', msg);
+  const res = await fetch(`{{ url_for('customer.chatbot') }}`, { method:'POST', body: form });
+  const data = await res.json();
+  log.innerHTML += `<div class="msg bot">${data.reply}</div>`;
+  log.scrollTop = log.scrollHeight;
+  return false;
+}
+</script>
+{% endblock %}
+

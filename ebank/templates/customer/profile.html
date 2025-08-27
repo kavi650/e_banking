@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Your Profile</h1>
+<div class="card">
+  <div><strong>Name:</strong> {{ account.customer.name }}</div>
+  <div><strong>Account Number:</strong> {{ account.account_number }}</div>
+  <div><strong>Mobile Number:</strong> {{ account.customer.phone_number }}</div>
+  <div><strong>Address:</strong> {{ account.customer.address }}</div>
+  <div><strong>Date of Birth:</strong> {{ account.customer.date_of_birth }}</div>
+  <div><strong>Aadhar Number:</strong> {{ account.customer.aadhar_number }}</div>
+  <div><strong>Account Balance:</strong> ₹ {{ '%.2f'|format(account.main_balance) }}</div>
+  <div><strong>Wallet Balance:</strong> ₹ {{ '%.2f'|format(account.wallet_balance) }}</div>
+  </div>
+{% endblock %}
+
